@@ -17,7 +17,7 @@
 <style>
 body {
   font-family: "Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  background: linear-gradient(135deg,#2c5f7c 0%,#3a4a6a 45%,#7a4b6b 100%);
+  background: linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
   margin: 0;
   padding: 0;
 }
@@ -34,10 +34,10 @@ body {
 /* 左侧栏 */
 .sidebar {
   width: 240px;
-  background: rgba(255,255,255,0.95);
+  background: #fff;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
 .sidebar h2 {
@@ -70,7 +70,7 @@ body {
   font-weight: 600;
 }
 
-/* 留言小卡片 */
+/* 侧栏留言提示卡片 */
 .sidebar-comment {
   margin-top: 28px;
   padding: 16px;
@@ -78,9 +78,8 @@ body {
   background: linear-gradient(
     135deg,
     rgba(74,183,204,0.18),
-    rgba(253,175,171,0.18)
+    rgba(242,179,198,0.18)
   );
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4);
 }
 
 .sidebar-comment h2 {
@@ -104,7 +103,7 @@ body {
 /* 正文 */
 .container {
   flex: 1;
-  background: rgba(255,255,255,0.96);
+  background: #fff;
   padding: 40px;
   border-radius: 16px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.18);
@@ -120,7 +119,7 @@ h1 {
   font-size: 28px;
   text-align: center;
   margin: 0 0 24px;
-  background: linear-gradient(90deg,#7fd3ff,#ff9ccf);
+  background: linear-gradient(90deg,#4ab7cc,#f2b3c6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -166,7 +165,7 @@ footer {
       祝你们星途璀璨，<br>
       也祝愿幸福降临我们的手心
     </p >
-    <a href=" ">前往留言区 →</a >
+    <a href=" ">前往幸福 →</a >
   </div>
 </aside>
 
@@ -177,20 +176,27 @@ footer {
 
   <div class="content">
     <p>大家好，我是 YSLNS。<br>
-    这是一个为喜欢而留下的角落。<br>
+       这是一个为喜欢而留下的角落。<br>
        在这里希望可以慢慢记录，<br>
        记录他们带给我们以及我的感动、陪伴，生活激励，<br>
        以及那些让我们继续向前的小小光亮。<br>
        愿幸福降临在我们每一个人的手心。
-    </p >
+
   </div>
 
   <div class="divider"></div>
 
-  <!-- 留言 -->
+  <!-- 留言区 -->
   <section id="comments">
-    <p style="text-align:center;font-size:13px;color:#aaa;margin-bottom:14px;">
-      夜色很轻，<br>你留下的每一句话都会被珍藏 
+
+    <p id="readonly-tip" style="
+      text-align:center;
+      font-size:13px;
+      color:#aaa;
+      margin-bottom:14px;
+      display:none;">
+      这里记录着<br>
+           每一个幸福时刻🩵🩷每一段璀璨星光
     </p >
 
     <div id="cusdis_thread"
@@ -198,7 +204,7 @@ footer {
       data-app-id="89ebc413-e6d7-45f0-af1c-f3aa6cff2e1a"
       data-page-id="index"
       data-page-title="一觉醒来是清晨"
-      data-theme="dark">
+      data-theme="light">
     </div>
 
     <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
@@ -240,6 +246,34 @@ ul.appendChild(li);
 });
 div.appendChild(t);div.appendChild(ul);menu.appendChild(div);
 });
+</script>
+
+<!-- 🕊 只读模式控制 -->
+<script>
+const READ_ONLY = false; // ← 改成ture/ false 即可开放留言
+
+function applyReadOnlyMode() {
+  if (!READ_ONLY) return;
+
+  document.getElementById("readonly-tip").style.display = "block";
+
+  const observer = new MutationObserver(() => {
+    const iframe = document.querySelector('#cusdis_thread iframe');
+    if (!iframe) return;
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const form = doc.querySelector('form');
+      if (form) {
+        form.style.display = "none";
+        observer.disconnect();
+      }
+    } catch(e){}
+  });
+
+  observer.observe(document.body,{childList:true,subtree:true});
+}
+
+applyReadOnlyMode();
 </script>
 
 </body>
