@@ -148,53 +148,55 @@ body{
 <script>
 fetch("diary.json")
   .then(res => res.json())
-  .then(list => {
-    const container = document.getElementById("auto-directory");
-    const tree = {};
+  .then(data => {
+    const menu = document.getElementById("diary-menu");
 
-    list.forEach(d => {
-      const [y,m,day] = d.split("-");
-      tree[y] ??= {};
-      tree[y][m] ??= [];
-      tree[y][m].push(day);
+    const tree = {};
+    data.forEach(d => {
+      if (!tree[d.year]) tree[d.year] = {};
+      if (!tree[d.year][d.month]) tree[d.year][d.month] = [];
+      tree[d.year][d.month].push(d);
     });
 
-    Object.keys(tree).sort().reverse().forEach(y=>{
-      const year = document.createElement("div");
-      year.className = "year";
-      year.textContent = y;
-      year.onclick = ()=>year.classList.toggle("open");
+    Object.keys(tree).sort((a,b)=>b-a).forEach(year => {
+      const yDiv = document.createElement("div");
+      yDiv.className = "month";
 
-      const months = document.createElement("div");
-      months.className = "month";
+      const yTitle = document.createElement("div");
+      yTitle.className = "month-title";
+      yTitle.textContent = year + " 年";
+      yTitle.onclick = () => yDiv.classList.toggle("open");
 
-      Object.keys(tree[y]).sort().reverse().forEach(m=>{
-        const month = document.createElement("div");
-        month.className = "month-title";
-        month.textContent = m;
-        month.onclick = e=>{
-          e.stopPropagation();
-          month.classList.toggle("open");
-        };
+      yDiv.appendChild(yTitle);
 
-        const days = document.createElement("div");
-        days.className = "day";
+      Object.keys(tree[year]).sort((a,b)=>b-a).forEach(month => {
+        const mDiv = document.createElement("div");
+        mDiv.style.marginLeft = "10px";
 
-        tree[y][m].sort((a,b)=>b-a).forEach(d=>{
-          const aTag = document.createElement("a");
-          aTag.href = `diary/${y}/${m}/${y}-${m}-${d}.html`;
-          aTag.textContent = d;
-          const div = document.createElement("div");
-          div.appendChild(aTag);
-          days.appendChild(div);
-        });
+        const mTitle = document.createElement("div");
+        mTitle.className = "month-title";
+        mTitle.textContent = month + " 月";
+        mTitle.onclick = () => mDiv.classList.toggle("open");
 
-        month.appendChild(days);
-        months.appendChild(month);
+        const ul = document.createElement("ul");
+
+        tree[year][month]
+          .sort((a,b)=>b.day-a.day)
+          .forEach(d => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = d.file;
+            a.textContent = d.day + " 日";
+            li.appendChild(a);
+            ul.appendChild(li);
+          });
+
+        mDiv.appendChild(mTitle);
+        mDiv.appendChild(ul);
+        yDiv.appendChild(mDiv);
       });
 
-      year.appendChild(months);
-      container.appendChild(year);
+      menu.appendChild(yDiv);
     });
   });
 </script>
