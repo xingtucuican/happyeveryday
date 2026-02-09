@@ -6,88 +6,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  margin:0;
-  background:#f5f6f8;
-  font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+@font-face {
+  font-family: "Smiley Sans";
+  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Oblique.otf")
+       format("opentype");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Smiley Sans",-apple-system,BlinkMacSystemFont,
+               "PingFang SC","Microsoft YaHei",sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
+  min-height: 100vh;
 }
 
 /* 整体布局 */
-.wrapper{
-  max-width:1200px;
-  margin:50px auto;
-  display:grid;
-  grid-template-columns:260px 1fr;
-  gap:30px;
+.layout {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 28px;
 }
 
-/* 左栏 */
-.left{
-  background:#fff;
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-}
-.block{margin-bottom:28px;}
-.block h3{
-  font-size:15px;
-  margin-bottom:10px;
-}
-.block p{
-  font-size:13px;
-  line-height:1.8;
-  color:#555;
-}
-.block a{
-  font-size:13px;
-  color:#4ab7cc;
-  text-decoration:none;
+/* 左侧卡片 */
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
 
-/* 目录样式 */
-.year,
-.month-title{
-  cursor:pointer;
-  margin-top:6px;
-  font-weight:600;
+.sidebar h2 {
+  font-size: 15px;
+  margin: 0 0 14px;
+  color: #333;
 }
 
-.month,
-.day{
-  display:none;
-  margin-left:12px;
+/* 目录 */
+.month-title {
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  margin: 6px 0;
 }
 
-.open > .month,
-.open > .day{
-  display:block;
+.month ul {
+  list-style: none;
+  padding-left: 12px;
+  margin: 6px 0 10px;
+  display: none;
 }
 
-.day a{
-  font-size:13px;
-  color:#666;
-  text-decoration:none;
+.month.open ul {
+  display: block;
 }
 
-/* 右栏 */
-.right{
-  background:#fff;
-  border-radius:16px;
-  padding:40px;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
+.month li {
+  margin: 6px 0;
 }
-.notice{
-  border-bottom:1px dashed #ddd;
-  padding:20px 0;
+
+.month a {
+  text-decoration: none;
+  font-size: 13px;
+  color: #999;
 }
-.notice:last-child{border:none;}
-.notice-date{
-  font-size:12px;
-  color:#999;
+
+.month a.active {
+  color: #4ab7cc;
+  font-weight: 600;
 }
-.notice-title{
-  font-size:16px;
-  margin:6px 0;
+
+/* 左侧幸福卡片 */
+.sidebar-comment {
+  margin-top: 26px;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(74,183,204,0.18),
+    rgba(242,179,198,0.18)
+  );
+}
+
+.sidebar-comment h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.sidebar-comment p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.7;
+}
+
+.sidebar-comment a {
+  font-size: 13px;
+  color: #4ab7cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* 右侧正文卡片 */
+.container {
+  flex: 1;
+  background: #fff;
+  border-radius: 20px;
+  padding: 42px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+}
+
+/* 日期 */
+.date {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+/* 标题 */
+h1 {
+  font-size: 28px;
+  text-align: center;
+  margin: 0 0 26px;
+  background: linear-gradient(90deg,#4ab7cc,#f2b3c6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 正文 */
+.content {
+  font-size: 16px;
+  line-height: 2;
+  color: #333;
+}
+
+/* 分割线 */
+.divider {
+  margin: 40px 0;
+  border-top: 1px dashed #e0e0e0;
+}
+
+footer {
+  text-align: center;
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 40px;
+}
+
+/* 手机 */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
 }
 </style>
 </head>
