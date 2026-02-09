@@ -29,15 +29,12 @@ body {
   padding: 0 20px;
   display: flex;
   gap: 28px;
-  align-items: stretch; /* ⭐关键：左右同高 */
+  align-items: stretch;
 }
 
 /* ===== 左侧 ===== */
-.left {
-  width: 260px;
-}
+.left { width: 260px; }
 
-/* 左侧卡片 */
 .block {
   background: #fff;
   border-radius: 16px;
@@ -91,11 +88,10 @@ body {
 /* ===== 右侧 ===== */
 .right {
   flex: 1;
-  display: flex;              /* ⭐关键 */
-  flex-direction: column;     /* ⭐纵向排列 */
+  display: flex;
+  flex-direction: column;
 }
 
-/* 右侧卡片 */
 .notice {
   background: #fff;
   border-radius: 18px;
@@ -104,7 +100,6 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,.12);
 }
 
-/* ⭐让留言板吃掉剩余高度 */
 .notice.message {
   flex: 1;
   display: flex;
@@ -157,8 +152,7 @@ body {
     <div class="block">
       <h3>🩵🩷NEW🩷🩵</h3>
       <p>站点更新与通知。</p >
-
-      <a href="">璀璨之路 →</a >
+      <a href=" ">璀璨之路 →</a >
     </div>
 
     <div class="block">
@@ -167,13 +161,14 @@ body {
         祝你们星途璀璨，<br>
         也祝愿幸福降临我们的手心
       </p >
-
-      <a href="">前往幸福 →</a >
+      <a href="#message">前往幸福 →</a >
     </div>
 
     <div class="block">
       <h3>🩵🩷穆橹🩷🩵</h3>
-      <div id="auto-directory"></div>
+      <div id="auto-directory">
+        <p style="font-size:12px;color:#aaa">📭 正在加载…</p >
+      </div>
     </div>
 
   </div>
@@ -181,7 +176,8 @@ body {
   <!-- 右侧 -->
   <div class="right">
 
-    <div class="notice">
+    <!-- 站点更新 -->
+    <div class="notice" id="news">
       <div class="notice-date">2026-02-09</div>
       <div class="notice-title">🩵🩷 一觉醒来是清晨 🩷🩵</div>
       <p>
@@ -191,7 +187,7 @@ body {
     </div>
 
     <!-- 留言板 -->
-    <div class="notice message">
+    <div class="notice message" id="message">
       <div class="notice-title">留言板</div>
 
       <div
@@ -212,11 +208,17 @@ body {
 <!-- 自动目录 -->
 <script>
 fetch("diary.json")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("diary.json 加载失败");
+    return res.json();
+  })
   .then(list => {
-    const container = document.getElementById("auto-directory");
-    const tree = {};
+    if (!Array.isArray(list)) throw new Error("diary.json 不是数组");
 
+    const container = document.getElementById("auto-directory");
+    container.innerHTML = "";
+
+    const tree = {};
     list.forEach(d=>{
       const [y,m,day]=d.split("-");
       tree[y]??={};
@@ -250,7 +252,7 @@ fetch("diary.json")
 
         mt.onclick=e=>{
           e.stopPropagation();
-          days.style.display=days.style.display==="block"?"none":"block";
+          days.style.display = days.style.display==="block"?"none":"block";
         };
 
         months.append(mt,days);
@@ -259,9 +261,17 @@ fetch("diary.json")
       year.appendChild(months);
       container.appendChild(year);
     });
+  })
+  .catch(err => {
+    document.getElementById("auto-directory").innerHTML =
+      "<p style='font-size:12px;color:#aaa'>📭 暂无日记索引</p >";
+    console.error(err);
   });
 </script>
-<footer>© 2026 LUMU</footer>
+
+<footer style="text-align:center;font-size:12px;color:#eee;margin:30px 0;">
+  © 2026 LUMU
+</footer>
 
 </body>
 </html>
