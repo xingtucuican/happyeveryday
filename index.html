@@ -1,6 +1,137 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<meta charset="UTF-8" />
+<title>Happy Everyday</title>
+
+<!-- 你原来的 style，原样保留 -->
+<style>
+@font-face {
+  font-family: "Smiley Sans";
+  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Oblique.otf")
+       format("opentype");
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Smiley Sans",-apple-system,BlinkMacSystemFont,
+               "PingFang SC","Microsoft YaHei",sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
+  min-height: 100vh;
+}
+
+.layout {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 28px;
+}
+
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.sidebar h2 {
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+.month-title {
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  margin: 6px 0;
+}
+
+.month ul {
+  list-style: none;
+  padding-left: 12px;
+  display: none;
+}
+
+.month.open ul { display: block; }
+
+.month a {
+  font-size: 13px;
+  color: #999;
+  text-decoration: none;
+}
+
+.month a.active {
+  color: #4ab7cc;
+  font-weight: 600;
+}
+
+.sidebar-comment {
+  margin-top: 26px;
+  padding: 16px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(74,183,204,0.18),
+    rgba(242,179,198,0.18)
+  );
+}
+
+.container {
+  flex: 1;
+  background: #fff;
+  border-radius: 20px;
+  padding: 42px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+}
+
+.date { font-size: 13px; color: #aaa; }
+h1 {
+  font-size: 28px;
+  text-align: center;
+  background: linear-gradient(90deg,#4ab7cc,#f2b3c6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.content { font-size: 16px; line-height: 2; }
+.divider { margin: 40px 0; border-top: 1px dashed #e0e0e0; }
+footer { text-align: center; font-size: 13px; color: #aaa; }
+
+@media (max-width:768px){
+  .layout{ flex-direction:column; }
+  .sidebar{ width:100%; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- 左侧目录 -->
+  <aside class="sidebar">
+    <h2>📅 日记目录</h2>
+    <div id="toc"></div>
+
+    <div class="sidebar-comment">
+      <h2>💙 幸福时刻</h2>
+      <p>记录生活中的微光。</p >
+    </div>
+  </aside>
+
+  <!-- 右侧正文 -->
+  <main class="container">
+
+    <!-- ✅ 首页原文：你现在写好的内容，全部放这里 -->
+    <div id="static-entry">
+      <!-- ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ -->
+      <!-- <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
 <meta charset="UTF-8">
 <title>🩵🩷 星途璀璨 🩵🩷</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -256,4 +387,69 @@ fetch("diary.json")
 </script>
 
 </body>
-</html
+</html -->
+      <!-- 不要改字，不要删标签 -->
+      <!-- ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ -->
+    </div>
+
+    <!-- ✅ 动态日记显示区（默认隐藏） -->
+    <div id="dynamic-entry" style="display:none;">
+      <div class="date" id="entry-date"></div>
+      <h1 id="entry-title"></h1>
+      <div class="content" id="entry-content"></div>
+    </div>
+
+    <div class="divider"></div>
+    <footer>© 2026 LUMU</footer>
+
+  </main>
+</div>
+
+<!-- JS：只在点目录时才切换 -->
+<script>
+fetch("diary.json")
+  .then(res => res.json())
+  .then(data => {
+    const toc = document.getElementById("toc");
+    const staticEntry = document.getElementById("static-entry");
+    const dynamicEntry = document.getElementById("dynamic-entry");
+
+    const title = document.getElementById("entry-title");
+    const date = document.getElementById("entry-date");
+    const content = document.getElementById("entry-content");
+
+    data.forEach(month => {
+      const m = document.createElement("div");
+      m.className = "month";
+
+      const mt = document.createElement("div");
+      mt.className = "month-title";
+      mt.textContent = month.month;
+      mt.onclick = () => m.classList.toggle("open");
+
+      const ul = document.createElement("ul");
+
+      month.entries.forEach(e => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.textContent = e.date.slice(-2);
+        a.href = "javascript:void(0)";
+        a.onclick = () => {
+          staticEntry.style.display = "none";
+          dynamicEntry.style.display = "block";
+          title.textContent = e.title;
+          date.textContent = e.date;
+          content.innerHTML = e.content.replace(/\n/g,"<br>");
+        };
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+
+      m.append(mt, ul);
+      toc.appendChild(m);
+    });
+  });
+</script>
+
+</body>
+</html>
