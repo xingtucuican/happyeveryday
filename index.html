@@ -105,6 +105,110 @@ footer { text-align: center; font-size: 13px; color: #aaa; }
   .layout{ flex-direction:column; }
   .sidebar{ width:100%; }
 }
+/* ================= 小卡片模式 ================= */
+
+/* 左侧每个模块 = 一张卡片 */
+.block {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 18px 20px;
+  margin-bottom: 22px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
+}
+
+.block h3 {
+  font-size: 14px;
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.block p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #555;
+}
+
+/* 链接更像“按钮感” */
+.block a {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #4ab7cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ================= 目录卡片细化 ================= */
+
+#auto-directory .year {
+  margin-top: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+#auto-directory .year:hover {
+  background: rgba(74,183,204,.08);
+}
+
+.month-title {
+  font-size: 13px;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.month-title:hover {
+  background: rgba(242,179,198,.12);
+}
+
+.day a {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.day a:hover {
+  background: rgba(74,183,204,.15);
+}
+
+/* ================= 右侧内容卡片 ================= */
+
+.right {
+  background: transparent; /* 外层不抢戏 */
+  padding: 0;
+  box-shadow: none;
+}
+
+.notice {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px 26px;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+}
+
+.notice-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.notice-title {
+  font-size: 17px;
+  margin: 6px 0 8px;
+  color: #333;
+}
+
+.notice p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #555;
+}
 </style>
 </head>
 
