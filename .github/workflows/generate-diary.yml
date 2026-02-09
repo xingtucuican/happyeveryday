@@ -1,0 +1,30 @@
+name: Generate Diary Index
+
+on:
+  push:
+    paths:
+      - "diary/**.html"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate diary.json
+        run: |
+          echo "[" > diary.json
+          find diary -name "*.html" | sort -r | while read file; do
+            date=$(basename "$file" .html)
+            echo "  \"$date\"," >> diary.json
+          done
+          sed -i '$ s/,$//' diary.json
+          echo "]" >> diary.json
+
+      - name: Commit diary.json
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add diary.json
+          git commit -m "auto: update diary index" || echo "No changes"
+          git push
