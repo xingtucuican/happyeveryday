@@ -130,63 +130,78 @@ body{
 </div>
 
 <script>
-fetch("diary.json")
+fetch("./diary.json")
   .then(res => res.json())
   .then(list => {
 
     const treeDiv = document.getElementById("tree");
     const postsDiv = document.getElementById("posts");
 
+    if(!treeDiv || !postsDiv){
+      console.error("缺少 tree 或 posts 容器");
+      return;
+    }
+
     const tree = {};
 
-    // 构建树结构
-    list.forEach(item => {
+    list.forEach(item=>{
       const y = item.year;
       const m = item.month;
       const d = item.day;
 
-      if (!tree[y]) tree[y] = {};
-      if (!tree[y][m]) tree[y][m] = [];
+      if(!tree[y]) tree[y] = {};
+      if(!tree[y][m]) tree[y][m] = [];
       tree[y][m].push(item);
     });
 
-    // 年份循环
-    Object.keys(tree).sort().reverse().forEach(y => {
+    Object.keys(tree).sort().reverse().forEach(y=>{
 
       const yearDiv = document.createElement("div");
-      yearDiv.className = "year";
-      yearDiv.textContent = y;
-      yearDiv.onclick = () => yearDiv.classList.toggle("open");
+      yearDiv.className="year";
+      yearDiv.innerHTML = "📂 " + y;
+      yearDiv.style.cursor="pointer";
 
       const monthWrap = document.createElement("div");
-      monthWrap.className = "month";
+      monthWrap.style.display="none";
 
-      // 月份循环
-      Object.keys(tree[y]).sort().reverse().forEach(m => {
+      yearDiv.onclick=()=>{
+        monthWrap.style.display =
+          monthWrap.style.display==="block"?"none":"block";
+      };
 
-        const monthDiv = document.createElement("div");
-        monthDiv.className = "month-title";
-        monthDiv.textContent = m;
+      Object.keys(tree[y]).sort().reverse().forEach(m=>{
 
-        const daysDiv = document.createElement("div");
-        daysDiv.className = "day";
+        const monthDiv=document.createElement("div");
+        monthDiv.innerHTML="📁 "+m;
+        monthDiv.style.marginLeft="10px";
+        monthDiv.style.cursor="pointer";
+
+        const dayWrap=document.createElement("div");
+        dayWrap.style.display="none";
+
+        monthDiv.onclick=(e)=>{
+          e.stopPropagation();
+          dayWrap.style.display =
+            dayWrap.style.display==="block"?"none":"block";
+        };
 
         tree[y][m]
-          .sort((a,b)=>b.day - a.day)
-          .forEach(item => {
+          .sort((a,b)=>b.day-a.day)
+          .forEach(item=>{
 
-            const a = document.createElement("a");
-            a.textContent = item.day;
-            a.href = "#";
+            const a=document.createElement("div");
+            a.textContent=item.day;
+            a.style.marginLeft="20px";
+            a.style.cursor="pointer";
 
-            a.onclick = (e)=>{
-              e.preventDefault();
+            a.onclick=(e)=>{
+              e.stopPropagation();
 
-              fetch(item.file)
+              fetch("./"+item.file)
                 .then(res=>res.text())
                 .then(html=>{
                   postsDiv.innerHTML = `
-                    <div class="section">
+                    <div style="background:#fff;padding:20px;border-radius:16px">
                       <h3>${item.year}-${item.month}-${item.day}</h3>
                       ${html}
                     </div>
@@ -194,26 +209,22 @@ fetch("diary.json")
                 });
             };
 
-            daysDiv.appendChild(a);
+            dayWrap.appendChild(a);
           });
 
-        monthDiv.onclick = e=>{
-          e.stopPropagation();
-          daysDiv.style.display =
-            daysDiv.style.display==="block"?"none":"block";
-        };
-
         monthWrap.appendChild(monthDiv);
-        monthWrap.appendChild(daysDiv);
+        monthWrap.appendChild(dayWrap);
       });
 
-      yearDiv.appendChild(monthWrap);
       treeDiv.appendChild(yearDiv);
+      treeDiv.appendChild(monthWrap);
     });
 
+  })
+  .catch(err=>{
+    console.error("读取 diary.json 失败",err);
   });
 </script>
-
 <footer style="text-align:center;font-size:12px;color:#eee;margin:30px 0;">
   © 2026 LUMU
 </footer>
