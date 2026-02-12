@@ -18,15 +18,7 @@ body{
   font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   min-height:100vh;
   overflow-x:hidden;
-
-  background:linear-gradient(
-    135deg,
-    #4ab7cc 0%,
-    #79cbd8 25%,
-    #b7dbe3 50%,
-    #e4cddc 75%,
-    #f2b3c6 100%
-  );
+  background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
   background-attachment:fixed;
   padding:100px 20px;
 }
@@ -205,46 +197,33 @@ footer{
 </footer>
 
 <script>
-/* 🌸 自动更新数据 */
-const newsData = [
-  {
-    date:"2026-02-12",
-    title:"结构调试完成",
-    content:"首页结构优化完成。<br>留言板视觉增强。<br>手机版优化完成。"
-  },
-  {
-    date:"2026-02-10",
-    title:"留言系统升级",
-    content:"新增留言数统计。<br>烟花触发功能上线。<br>纪念模式开启。"
-  },
-  {
-    date:"2026-02-08",
-    title:"幸福时刻上线",
-    content:"自动归档系统搭建完成。<br>粉蓝渐变统一风格。"
-  }
-];
+/* 🌸 动态拉取 news.json 文件 */
+fetch('news.json')
+  .then(res=>res.json())
+  .then(newsData=>{
+      // 按日期倒序
+      newsData.sort((a,b)=> new Date(b.date) - new Date(a.date));
 
-/* 🌸 自动倒序排序 */
-newsData.sort((a,b)=> new Date(b.date)-new Date(a.date));
+      const timeline = document.getElementById("timeline");
 
-const timeline = document.getElementById("timeline");
+      newsData.forEach((item,index)=>{
+          const side = index % 2 === 0 ? "right" : "left";
 
-newsData.forEach((item,index)=>{
-  const side = index % 2 === 0 ? "right":"left";
+          const div = document.createElement("div");
+          div.className = "item " + side;
 
-  const div = document.createElement("div");
-  div.className = "item " + side;
+          div.innerHTML = `
+            <div class="card">
+              <div class="date">${item.date}</div>
+              <div class="title">${item.title}</div>
+              <div class="content">${item.content}</div>
+            </div>
+          `;
 
-  div.innerHTML = `
-    <div class="card">
-      <div class="date">${item.date}</div>
-      <div class="title">${item.title}</div>
-      <div class="content">${item.content}</div>
-    </div>
-  `;
-
-  timeline.appendChild(div);
-});
+          timeline.appendChild(div);
+      });
+  })
+  .catch(err=>console.error("拉取新闻失败:", err));
 
 /* 🌸 粒子生成 */
 const particleContainer = document.getElementById("particles");
