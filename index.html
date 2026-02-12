@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<title>🩵🩷66星途璀璨🩷🩵</title>
+<meta charset="UTF-8">
+<title>🩵🩷星途璀璨🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -105,7 +105,7 @@ body{
   font-size:24px;
   font-weight:600;
   margin:10px 0 20px;
-  color:#555;
+  display:inline-block;
 }
 
 .news-item-date{
@@ -115,7 +115,14 @@ body{
   margin-bottom:6px;
 }
 
-/* 右侧公告和留言 */
+/* 渐变文字效果，每个字独立渐变 */
+.news-gradient{
+  background: linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display:inline-block;
+}
+
 .notice-date{font-size:14px;color:#999;}
 .notice-title{font-size:24px;margin:10px 0 20px;font-weight:600;}
 .notice p{font-size:16px;line-height:2.1;color:#555;}
@@ -205,7 +212,6 @@ const colors = ["rgba(255,182,210,0.9)", "rgba(173,216,230,0.7)"];
 const particles = [];
 const baseCount = 70;
 
-// 初始漂浮粒子
 for(let i=0;i<baseCount;i++){
   particles.push({
     x: Math.random()*canvas.width,
@@ -218,7 +224,6 @@ for(let i=0;i<baseCount;i++){
   });
 }
 
-// 点击生成星尘爆炸粒子
 window.addEventListener("click", e=>{
   const ripple = document.createElement("div");
   ripple.className = "ripple";
@@ -289,9 +294,13 @@ fetch('news.json')
     const latestThree = data.slice(0,3); // 取最新三条
     latestThree.forEach(item=>{
       const div = document.createElement("div");
+
+      // 标题每个字单独渐变
+      const titleChars = item.title.split('').map(c=>`<span class="news-gradient">${c}</span>`).join('');
+
       div.innerHTML = `
         <div class="news-item-date">${item.date}</div>
-        <div class="news-item-title">${item.title}</div>
+        <div class="news-item-title">${titleChars}</div>
       `;
       newsList.appendChild(div);
     });
