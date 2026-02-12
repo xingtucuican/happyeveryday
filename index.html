@@ -21,9 +21,10 @@ body{
   background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
   background-attachment:fixed;
   overflow-x:hidden;
+  cursor: pointer;
 }
 
-/* ===== 粒子画布 ===== */
+/* 粒子画布 */
 #particle-canvas{
   position:fixed;
   top:0;
@@ -34,27 +35,7 @@ body{
   pointer-events:none;
 }
 
-/* 点击扩散波 */
-.ripple{
-  position:fixed;
-  border-radius:50%;
-  pointer-events:none;
-  transform:translate(-50%,-50%);
-  background:radial-gradient(circle,
-    rgba(255,182,210,0.9) 0%,
-    rgba(173,216,230,0.6) 40%,
-    rgba(255,255,255,0.2) 70%,
-    transparent 100%);
-  animation:rippleAnim 1.2s ease-out forwards;
-  z-index:0;
-}
-
-@keyframes rippleAnim{
-  from{width:0;height:0;opacity:1;}
-  to{width:400px;height:400px;opacity:0;}
-}
-
-/* ===== 布局 ===== */
+/* 布局 */
 .main-wrapper{
   position:relative;
   z-index:1;
@@ -170,82 +151,111 @@ data-page-title="星途璀璨">
 </footer>
 
 <script>
-const canvas=document.getElementById("particle-canvas");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
 
 function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 resize();
-window.addEventListener("resize",resize);
+window.addEventListener("resize", resize);
 
-const mouse={x:null,y:null};
-window.addEventListener("mousemove",e=>{
-  mouse.x=e.clientX;
-  mouse.y=e.clientY;
-});
-window.addEventListener("touchmove",e=>{
-  mouse.x=e.touches[0].clientX;
-  mouse.y=e.touches[0].clientY;
-});
+let particles = [];
+const maxParticles = 400;
 
-const particles=[];
-const count=70;
+// 心形公式
+function heart(t, scale=12){
+  const x = 16*Math.pow(Math.sin(t),3);
+  const y = - (13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+  return {x: x*scale + canvas.width/2, y: y*scale + canvas.height/2};
+}
 
-for(let i=0;i<count;i++){
+// 初始化心形粒子
+for(let i=0;i<150;i++){
+  const t = Math.random()*Math.PI*2;
+  const pos = heart(t);
   particles.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    vx:(Math.random()-0.5)*0.6,
-    vy:(Math.random()-0.5)*0.6,
-    size:Math.random()*2+1
+    x: pos.x + (Math.random()-0.5)*50,
+    y: pos.y + (Math.random()-0.5)*50,
+    vx: (Math.random()-0.5)*0.2,
+    vy: (Math.random()-0.5)*0.2,
+    size: Math.random()*2+1,
+    color: `hsl(${Math.random()*360}, 80%, 70%)`,
+    originX: pos.x,
+    originY: pos.y,
+    life: Infinity // 心形粒子永远存在
   });
 }
+
+// 点击生成流动星尘粒子
+window.addEventListener("click", e=>{
+  for(let i=0;i<80;i++){
+    particles.push({
+      x:e.clientX,
+      y:e.clientY,
+      vx:(Math.random()-0.5)*6,
+      vy:(Math.random()-0.5)*6,
+      size: Math.random()*2+1.5,
+      color: `hsl(${Math.random()*360}, 90%, 70%)`,
+      originX: canvas.width/2,
+      originY: canvas.height/2,
+      life: 120 + Math.random()*60 // 星尘粒子寿命
+    });
+  }
+});
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  particles.forEach(p=>{
-    let dx=mouse.x-p.x;
-    let dy=mouse.y-p.y;
-    let dist=Math.sqrt(dx*dx+dy*dy);
+  particles.forEach((p,i)=>{
+    // 移动
+    p.x += p.vx;
+    p.y += p.vy;
 
-    if(dist<120){
-      p.x+=dx*0.02;
-      p.y+=dy*0.02;
+    // 如果是心形粒子，轻微漂动回归原位
+    if(p.life === Infinity){
+      const dx = p.originX - p.x;
+      const dy = p.originY - p.y;
+      p.vx += dx*0.002;
+      p.vy += dy*0.002;
+      p.vx *= 0.98;
+      p.vy *= 0.98;
+    } else {
+      // 星尘粒子衰减
+      p.life--;
+      p.vx *= 0.95;
+      p.vy *= 0.95;
+      // 回到心形中心
+      const dx = p.originX - p.x;
+      const dy = p.originY - p.y;
+      p.vx += dx*0.001;
+      p.vy += dy*0.001;
     }
 
-    p.x+=p.vx;
-    p.y+=p.vy;
-
-    if(p.x<0||p.x>canvas.width) p.vx*=-1;
-    if(p.y<0||p.y>canvas.height) p.vy*=-1;
-
-    const gradient=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
-    gradient.addColorStop(0,"rgba(255,182,210,0.9)");
-    gradient.addColorStop(0.5,"rgba(173,216,230,0.5)");
+    // 绘制
+    const gradient = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
+    gradient.addColorStop(0,"rgba(255,255,255,1)");
+    gradient.addColorStop(0.5,p.color);
     gradient.addColorStop(1,"rgba(255,255,255,0)");
-
-    ctx.fillStyle=gradient;
+    ctx.fillStyle = gradient;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.size*6,0,Math.PI*2);
     ctx.fill();
+
+    // 删除寿命结束的粒子
+    if(p.life <= 0) particles.splice(i,1);
   });
+
+  // 限制粒子数量
+  if(particles.length > maxParticles){
+    particles.splice(0, particles.length - maxParticles);
+  }
 
   requestAnimationFrame(draw);
 }
-draw();
 
-/* 点击扩散波 */
-window.addEventListener("click",e=>{
-  const ripple=document.createElement("div");
-  ripple.className="ripple";
-  ripple.style.left=e.clientX+"px";
-  ripple.style.top=e.clientY+"px";
-  document.body.appendChild(ripple);
-  setTimeout(()=>ripple.remove(),1200);
-});
+draw();
 </script>
 
 </body>
