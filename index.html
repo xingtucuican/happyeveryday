@@ -13,187 +13,62 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
-
-html,body{
-  height:100%;
-}
+html,body{height:100%;}
 
 body{
   font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  margin:0;
   min-height:100vh;
-
-  background: linear-gradient(
-  135deg,
-  #4ab7cc 0%,
-  #79cbd8 25%,
-  #b7dbe3 50%,
-  #e4cddc 75%,
-  #f2b3c6 100%
-  );
-
-  background-attachment: fixed;
+  background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
+  background-attachment:fixed;
 }
 
-/* ===== 主体容器 ===== */
+/* 布局 */
 .main-wrapper{
-  flex:1;
   display:flex;
   justify-content:center;
   padding:80px 30px;
 }
 
-/* ===== 黄金比例布局 ===== */
 .layout{
   width:100%;
   max-width:1200px;
   display:flex;
   gap:50px;
-  align-items:stretch;
 }
 
-/* ===== 左右比例 ===== */
-.left{
-  flex:3;
-  display:flex;
-  flex-direction:column;
-  gap:30px;
-  min-height:100%;
-}
+.left{flex:3;display:flex;flex-direction:column;gap:30px;}
+.right{flex:7;display:flex;flex-direction:column;gap:40px;}
 
-.right{
-  flex:7;
-  display:flex;
-  flex-direction:column;
-  gap:40px;
-  min-height:100%;
-}
-
-/* ===== 卡片 ===== */
-.block,
-.notice{
+.block,.notice{
   background:#fff;
   border-radius:22px;
   padding:40px 42px;
   box-shadow:0 20px 45px rgba(0,0,0,.12);
-  transition:all .3s ease;
 }
 
-.block:hover,
-.notice:hover{
-  transform:translateY(-4px);
-  box-shadow:0 25px 55px rgba(0,0,0,.15);
-}
-
-/* ===== 留言板增强核心 ===== */
 .notice.message{
   flex:1;
-  display:flex;
-  flex-direction:column;
-  min-height:700px; /* 视觉撑满 */
-}
-
-/* 让留言区真正撑满 */
-#cusdis_thread{
-  flex:1;
+  min-height:700px;
   display:flex;
   flex-direction:column;
 }
 
-/* 强制 iframe 不出现内部滚动 */
 #cusdis_thread iframe{
-  width:100% !important;
-  min-height:800px !important;
-  height:100% !important;
-  border:none !important;
+  width:100%!important;
+  min-height:800px!important;
+  border:none!important;
 }
 
-/* ===== 文字样式 ===== */
-.block h3{
-  font-size:18px;
-  margin-bottom:18px;
-}
+.block h3{font-size:18px;margin-bottom:18px;}
+.block p{font-size:15px;line-height:2;color:#555;}
+.block a{font-size:15px;color:#4ab7cc;text-decoration:none;font-weight:600;}
 
-.block p{
-  font-size:15px;
-  line-height:2;
-  color:#555;
-}
+.notice-date{font-size:14px;color:#999;}
+.notice-title{font-size:24px;margin:10px 0 20px;font-weight:600;}
+.notice p{font-size:16px;line-height:2.1;color:#555;}
 
-.block a{
-  font-size:15px;
-  color:#4ab7cc;
-  text-decoration:none;
-  font-weight:600;
-}
-
-.notice-date{
-  font-size:14px;
-  color:#999;
-}
-
-.notice-title{
-  font-size:24px;
-  margin:10px 0 20px;
-  font-weight:600;
-}
-
-.notice p{
-  font-size:16px;
-  line-height:2.1;
-  color:#555;
-}
-
-/* ===== 手机极简竖排版 ===== */
-@media (max-width:900px){
-
-  .main-wrapper{
-    padding:40px 20px;
-  }
-
-  .layout{
-    flex-direction:column;
-    gap:24px;
-  }
-
-  .left,
-  .right{
-    flex:none;
-    width:100%;
-    min-height:auto;
-    gap:24px;
-  }
-
-  .block,
-  .notice{
-    padding:28px 24px;
-    border-radius:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
-  }
-
-  .block:hover,
-  .notice:hover{
-    transform:none;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
-  }
-
-  .notice-title{
-    font-size:20px;
-  }
-
-  .notice p{
-    font-size:15px;
-    line-height:1.9;
-  }
-
-  .notice.message{
-    min-height:600px;
-  }
-
-  footer{
-    padding:20px 0;
-    font-size:12px;
-  }
+@media(max-width:900px){
+  .layout{flex-direction:column;}
 }
 </style>
 </head>
@@ -201,74 +76,61 @@ body{
 <body>
 
 <div class="main-wrapper">
-  <div class="layout">
+<div class="layout">
 
-    <!-- 左侧 -->
-    <div class="left">
+<div class="left">
 
-      <div class="block">
-        <h3>🩵🩷一切的开始🩷🩵</h3>
-        <p>
-          大家好<br>
-          这是一个为喜欢而留下的角落<br>
-          在这里希望可以慢慢记录<br>
-          那些感动、陪伴与激励<br>
-          以及让我们继续向前的小小光亮<br>
-          愿幸福降临在我们每一个人的手心
-        </p >
-      </div>
+<div class="block">
+<h3>🩵🩷一切的开始🩷🩵</h3>
+<p>
+大家好<br>
+这是一个为喜欢而留下的角落<br>
+愿幸福降临在我们每一个人的手心
+</p >
+</div>
 
-      <div class="block">
-        <h3>🩵🩷NEWS🩷🩵</h3>
-        <p>站点更新与通知。</p >
-        <a href="notice">璀璨之路 →</a >
-      </div>
+<div class="block">
+<h3>🩵🩷NEWS🩷🩵</h3>
+<p>站点更新与通知。</p >
+<a href=" ">璀璨之路 →</a >
+</div>
 
-      <div class="block">
-        <h3>🩵🩷幸福时刻🩷🩵</h3>
-        <p>
-          祝你们星途璀璨，<br>
-          也祝愿幸福降临我们的手心
-        </p >
-        <a href="happiness.html">前往幸福 →</a >
-      </div>
+<div class="block">
+<h3>🩵🩷幸福时刻🩷🩵</h3>
+<p>祝你们星途璀璨</p >
+<a href="happiness.html">前往幸福 →</a >
+</div>
 
-    </div>
+</div>
 
-    <!-- 右侧 -->
-    <div class="right">
+<div class="right">
 
-      <div class="notice">
-        <div class="notice-date">2026-02-09</div>
-        <div class="notice-title">🩵🩷 一觉醒来是清晨 🩷🩵</div>
-        <p>
-          让我们一起成长，一起进步<br>
-          记录每一个幸福时刻<br>
-          每一段璀璨星光
-        </p >
-      </div>
+<div class="notice">
+<div class="notice-date">2026-02-09</div>
+<div class="notice-title">🩵🩷 一觉醒来是清晨 🩷🩵</div>
+<p>记录每一个幸福时刻</p >
+</div>
 
-      <div class="notice message">
-        <div class="notice-title">留言板</div>
+<div class="notice message">
+<div class="notice-title">留言板</div>
 
-        <div
-          id="cusdis_thread"
-          data-host="https://cusdis.com"
-          data-app-id="6bd954b7-e2b4-4206-a1c3-3072cecfc326"
-          data-page-id="global-board"
-          data-page-title="星途璀璨">
-        </div>
+<div id="cusdis_thread"
+data-host="https://cusdis.com"
+data-app-id="6bd954b7-e2b4-4206-a1c3-3072cecfc326"
+data-page-id="global-board"
+data-page-title="星途璀璨">
+</div>
 
-        <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
-      </div>
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</div>
 
-    </div>
+</div>
 
-  </div>
+</div>
 </div>
 
 <footer style="text-align:center;font-size:13px;color:#eee;padding:30px 0;">
-  © 2026 LUMU
+© 2026 LUMU
 </footer>
 
 </body>
