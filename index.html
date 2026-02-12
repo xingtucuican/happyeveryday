@@ -30,11 +30,12 @@ body{
   #b7dbe3 50%,
   #e4cddc 75%,
   #f2b3c6 100%
-);
+  );
 
   background-attachment: fixed;
 }
-/* ===== 主体容器锁死高度 ===== */
+
+/* ===== 主体容器 ===== */
 .main-wrapper{
   flex:1;
   display:flex;
@@ -57,6 +58,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:30px;
+  min-height:100%;
 }
 
 .right{
@@ -64,6 +66,7 @@ body{
   display:flex;
   flex-direction:column;
   gap:40px;
+  min-height:100%;
 }
 
 /* ===== 卡片 ===== */
@@ -82,19 +85,27 @@ body{
   box-shadow:0 25px 55px rgba(0,0,0,.15);
 }
 
-/* ===== 关键：自动对齐核心 ===== */
-.left{
-  min-height:100%;
-}
-
-.right{
-  min-height:100%;
-}
-
+/* ===== 留言板增强核心 ===== */
 .notice.message{
-  flex:1;            /* 留言板自动撑满右侧 */
+  flex:1;
   display:flex;
   flex-direction:column;
+  min-height:700px; /* 视觉撑满 */
+}
+
+/* 让留言区真正撑满 */
+#cusdis_thread{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+/* 强制 iframe 不出现内部滚动 */
+#cusdis_thread iframe{
+  width:100% !important;
+  min-height:800px !important;
+  height:100% !important;
+  border:none !important;
 }
 
 /* ===== 文字样式 ===== */
@@ -176,7 +187,7 @@ body{
   }
 
   .notice.message{
-    flex:none;
+    min-height:600px;
   }
 
   footer{
