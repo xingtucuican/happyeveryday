@@ -20,10 +20,44 @@ body{
   min-height:100vh;
   background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
   background-attachment:fixed;
+  overflow-x:hidden;
 }
 
-/* 布局 */
+/* ===== 粒子画布 ===== */
+#particle-canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* 点击扩散波 */
+.ripple{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,
+    rgba(255,182,210,0.9) 0%,
+    rgba(173,216,230,0.6) 40%,
+    rgba(255,255,255,0.2) 70%,
+    transparent 100%);
+  animation:rippleAnim 1.2s ease-out forwards;
+  z-index:0;
+}
+
+@keyframes rippleAnim{
+  from{width:0;height:0;opacity:1;}
+  to{width:400px;height:400px;opacity:0;}
+}
+
+/* ===== 布局 ===== */
 .main-wrapper{
+  position:relative;
+  z-index:1;
   display:flex;
   justify-content:center;
   padding:80px 30px;
@@ -40,7 +74,8 @@ body{
 .right{flex:7;display:flex;flex-direction:column;gap:40px;}
 
 .block,.notice{
-  background:#fff;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);
   border-radius:22px;
   padding:40px 42px;
   box-shadow:0 20px 45px rgba(0,0,0,.12);
@@ -75,6 +110,8 @@ body{
 
 <body>
 
+<canvas id="particle-canvas"></canvas>
+
 <div class="main-wrapper">
 <div class="layout">
 
@@ -92,7 +129,7 @@ body{
 <div class="block">
 <h3>🩵🩷NEWS🩷🩵</h3>
 <p>站点更新与通知。</p >
-<a href="news.html">璀璨之路 →</a >
+<a href=" ">璀璨之路 →</a >
 </div>
 
 <div class="block">
@@ -125,13 +162,91 @@ data-page-title="星途璀璨">
 </div>
 
 </div>
-
 </div>
 </div>
 
-<footer style="text-align:center;font-size:13px;color:#eee;padding:30px 0;">
+<footer style="text-align:center;font-size:13px;color:#eee;padding:30px 0;position:relative;z-index:1;">
 © 2026 LUMU
 </footer>
+
+<script>
+const canvas=document.getElementById("particle-canvas");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+const mouse={x:null,y:null};
+window.addEventListener("mousemove",e=>{
+  mouse.x=e.clientX;
+  mouse.y=e.clientY;
+});
+window.addEventListener("touchmove",e=>{
+  mouse.x=e.touches[0].clientX;
+  mouse.y=e.touches[0].clientY;
+});
+
+const particles=[];
+const count=70;
+
+for(let i=0;i<count;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-0.5)*0.6,
+    vy:(Math.random()-0.5)*0.6,
+    size:Math.random()*2+1
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+    let dx=mouse.x-p.x;
+    let dy=mouse.y-p.y;
+    let dist=Math.sqrt(dx*dx+dy*dy);
+
+    if(dist<120){
+      p.x+=dx*0.02;
+      p.y+=dy*0.02;
+    }
+
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+    if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+    const gradient=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
+    gradient.addColorStop(0,"rgba(255,182,210,0.9)");
+    gradient.addColorStop(0.5,"rgba(173,216,230,0.5)");
+    gradient.addColorStop(1,"rgba(255,255,255,0)");
+
+    ctx.fillStyle=gradient;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size*6,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* 点击扩散波 */
+window.addEventListener("click",e=>{
+  const ripple=document.createElement("div");
+  ripple.className="ripple";
+  ripple.style.left=e.clientX+"px";
+  ripple.style.top=e.clientY+"px";
+  document.body.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),1200);
+});
+</script>
 
 </body>
 </html>
