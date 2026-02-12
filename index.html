@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<title>🩵🩷66星途璀璨🩷🩵</title>
+<title>🩵🩷666星途璀璨🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -49,6 +49,7 @@ body{
   animation:rippleAnim 1.2s ease-out forwards;
   z-index:0;
 }
+
 @keyframes rippleAnim{
   from{width:0;height:0;opacity:1;}
   to{width:400px;height:400px;opacity:0;}
@@ -102,11 +103,24 @@ body{
 .notice-title{font-size:24px;margin:10px 0 20px;font-weight:600;}
 .notice p{font-size:16px;line-height:2.1;color:#555;}
 
-/* News 列表样式 */
-.news-list { list-style:none; padding-left:0; margin-top:10px; }
-.news-list li { margin-bottom:10px; }
-.news-list li a { color:#4ab7cc; text-decoration:none; font-weight:500; }
-.news-list li span { color:#999; font-size:13px; margin-left:6px; }
+.news-list{
+  list-style:none;
+  padding-left:0;
+}
+.news-list li{
+  margin-bottom:12px;
+  font-size:15px;
+}
+.news-list li a{
+  color:#4ab7cc;
+  text-decoration:none;
+  font-weight:600;
+}
+.news-list li span{
+  color:#999;
+  font-size:13px;
+  margin-left:6px;
+}
 
 @media(max-width:900px){
   .layout{flex-direction:column;}
@@ -132,12 +146,11 @@ body{
 </p >
 </div>
 
-<!-- News 模块 -->
 <div class="block">
 <h3>🩵🩷NEWS🩷🩵</h3>
-<p>站点更新与通知。</p >
+<p>站点更新与通知：</p >
 <ul class="news-list" id="news-list"></ul>
-<a href="news.html">璀璨之路 →</a >
+<a href=" ">璀璨之路 →</a >
 </div>
 
 <div class="block">
@@ -178,17 +191,20 @@ data-page-title="星途璀璨">
 </footer>
 
 <script>
-/* =================== 粒子 + 星尘 =================== */
+// 🌸 粒子与星尘
 const canvas = document.getElementById("particle-canvas");
 const ctx = canvas.getContext("2d");
 
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
 resize();
 window.addEventListener("resize", resize);
 
 const mouse = {x:null, y:null};
-window.addEventListener("mousemove", e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
-window.addEventListener("touchmove", e=>{ mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY; });
+window.addEventListener("mousemove", e=>{mouse.x=e.clientX; mouse.y=e.clientY;});
+window.addEventListener("touchmove", e=>{mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY;});
 
 const colors = ["rgba(255,182,210,0.9)", "rgba(173,216,230,0.7)"];
 const particles = [];
@@ -207,7 +223,7 @@ for(let i=0;i<baseCount;i++){
   });
 }
 
-// 点击生成星尘爆炸粒子
+// 点击生成星尘
 window.addEventListener("click", e=>{
   const ripple = document.createElement("div");
   ripple.className = "ripple";
@@ -241,9 +257,11 @@ function draw(){
       if(dist < 120){ p.x += dx*0.02; p.y += dy*0.02; }
     }
 
-    p.x += p.vx; p.y += p.vy;
-    if(p.x<0||p.x>canvas.width)p.vx*=-1;
-    if(p.y<0||p.y>canvas.height)p.vy*=-1;
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+    if(p.y<0||p.y>canvas.height) p.vy*=-1;
 
     if(p.life !== Infinity){
       p.life--;
@@ -252,48 +270,34 @@ function draw(){
       if(p.life<=0){particles.splice(i,1); continue;}
     }
 
-    const gradient = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*6);
     gradient.addColorStop(0, p.color);
-    gradient.addColorStop(1,"rgba(255,255,255,0)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
     ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(p.x,p.y,p.size*6,0,Math.PI*2);
+    ctx.arc(p.x, p.y, p.size*6, 0, Math.PI*2);
     ctx.fill();
   }
-
   requestAnimationFrame(draw);
 }
 draw();
 
-/* =================== 从 news.html 获取最新三条 =================== */
+// 🌸 拉取最新三条 news
 async function loadLatestNews() {
-  try {
-    const res = await fetch('news.html');
-    const text = await res.text();
-
-    // 从 news.html 提取 newsData
-    const match = text.match(/const newsData\s*=\s*(\[[\s\S]*?\]);/);
-    if(!match) return;
-    const data = JSON.parse(match[1]);
-
-    const newsList = document.getElementById('news-list');
-    newsList.innerHTML = '';
-
+  try{
+    const res = await fetch('news.json');
+    const data = await res.json();
     data.sort((a,b)=> new Date(b.date)-new Date(a.date))
         .slice(0,3)
         .forEach(item=>{
           const li = document.createElement('li');
           li.innerHTML = `<a href="news.html#${item.date}">${item.title}</a ><span>${item.date}</span>`;
-          newsList.appendChild(li);
+          document.getElementById('news-list').appendChild(li);
         });
-
-  } catch(e) { console.error("加载最新新闻失败", e); }
+  }catch(e){console.error("加载新闻失败", e);}
 }
 
-// 首次加载
 loadLatestNews();
-// 每隔5分钟刷新一次
-setInterval(loadLatestNews,5*60*1000);
 </script>
 
 </body>
