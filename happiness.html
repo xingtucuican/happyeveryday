@@ -38,37 +38,12 @@ body{
   font-size:18px;
 }
 
-.year{
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:12px;
-}
-
-.month{
-  margin-left:15px;
-  display:none;
-}
-
-.month-title{
-  cursor:pointer;
-  margin-top:6px;
-  color:#666;
-}
-
-.day{
-  margin-left:20px;
-  display:none;
-}
-
-.day-item{
-  cursor:pointer;
-  font-size:14px;
-  margin:4px 0;
-}
-
-.day-item:hover{
-  color:#f2b3c6;
-}
+.year{font-weight:bold;cursor:pointer;margin-top:12px;}
+.month{margin-left:15px;display:none;}
+.month-title{cursor:pointer;margin-top:6px;color:#666;}
+.day{margin-left:20px;display:none;}
+.day-item{cursor:pointer;font-size:14px;margin:4px 0;}
+.day-item:hover{color:#f2b3c6;}
 
 /* ===== 右侧 ===== */
 .main{
@@ -76,7 +51,6 @@ body{
   flex:1;
   overflow-y:auto;
   padding:40px;
-  scroll-behavior:smooth;
 }
 
 .section{
@@ -85,32 +59,20 @@ body{
   border-radius:20px;
   margin-bottom:40px;
   box-shadow:0 12px 35px rgba(0,0,0,.1);
-  animation:fadeIn .4s ease;
 }
 
-.section h3{
-  margin-top:0;
-  text-align:center;
-}
+.section h3{text-align:center;margin-top:0;}
 
-/* 返回按钮 */
 .back{
   display:inline-block;
   margin-bottom:20px;
   text-decoration:none;
   color:#ff8fa3;
   font-weight:bold;
-  font-size:15px;
 }
 
 .back:hover{opacity:.7;}
 
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(8px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* 手机 */
 @media(max-width:768px){
   .sidebar{position:relative;width:100%;height:auto;}
   .main{margin-left:0;}
@@ -134,7 +96,7 @@ body{
 
     <a href=" " class="back" id="backBtn">← 返回首页</a >
 
-    <!-- 默认留言板 -->
+    <!-- 留言板 -->
     <div id="default-board" class="section">
       <h3>留言板</h3>
       <div
@@ -146,14 +108,23 @@ body{
       </div>
     </div>
 
-    <!-- 日记显示区域 -->
     <div id="posts"></div>
 
   </div>
 
 </div>
 
+<!-- 先加载 Cusdis -->
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+
 <script>
+// 强制等待页面加载完成后刷新 Cusdis
+window.addEventListener("load", function(){
+  if(window.CUSDIS){
+    window.CUSDIS.refresh();
+  }
+});
+
 fetch("./diary.json")
 .then(res=>res.json())
 .then(list=>{
@@ -165,12 +136,9 @@ fetch("./diary.json")
   const tree={};
 
   list.forEach(item=>{
-    const y=item.year;
-    const m=item.month;
-
-    if(!tree[y]) tree[y]={};
-    if(!tree[y][m]) tree[y][m]=[];
-    tree[y][m].push(item);
+    if(!tree[item.year]) tree[item.year]={};
+    if(!tree[item.year][item.month]) tree[item.year][item.month]=[];
+    tree[item.year][item.month].push(item);
   });
 
   Object.keys(tree).sort().reverse().forEach(y=>{
@@ -212,8 +180,6 @@ fetch("./diary.json")
 
         dayDiv.onclick=(e)=>{
           e.stopPropagation();
-
-          // 隐藏留言板
           defaultBoard.style.display="none";
 
           fetch("./"+item.file)
@@ -239,23 +205,19 @@ fetch("./diary.json")
     treeDiv.appendChild(monthWrap);
   });
 
-  // 返回首页逻辑（页面内切换）
+  // 返回首页
   document.getElementById("backBtn").onclick=function(e){
     e.preventDefault();
-
     postsDiv.innerHTML="";
     defaultBoard.style.display="block";
+
+    if(window.CUSDIS){
+      window.CUSDIS.refresh();
+    }
   };
 
 });
 </script>
-
-<!-- Cusdis 必须静态存在 -->
-<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
-
-<footer style="text-align:center;font-size:12px;color:#eee;margin:30px 0;">
-  © 2026 LUMU
-</footer>
 
 </body>
 </html>
