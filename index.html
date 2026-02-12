@@ -265,35 +265,35 @@ function draw(){
 }
 draw();
 
-/* =================== 加载 news.html 最新三条 =================== */
+/* =================== 从 news.html 获取最新三条 =================== */
 async function loadLatestNews() {
   try {
     const res = await fetch('news.html');
     const text = await res.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text,'text/html');
-    const items = Array.from(doc.querySelectorAll('#news-items li'));
+
+    // 从 news.html 提取 newsData
+    const match = text.match(/const newsData\s*=\s*(\[[\s\S]*?\]);/);
+    if(!match) return;
+    const data = JSON.parse(match[1]);
+
     const newsList = document.getElementById('news-list');
     newsList.innerHTML = '';
 
-    items.sort((a,b)=>b.dataset.date.localeCompare(a.dataset.date))
-         .slice(0,3)
-         .forEach(li=>{
-           const link = li.querySelector('a');
-           const date = li.dataset.date;
-           const newsLi = document.createElement('li');
-           newsLi.innerHTML = `<a href="${link.href}">${link.textContent}</a ><span>${date}</span>`;
-           newsList.appendChild(newsLi);
-         });
-  } catch(e) {
-    console.error('加载新闻失败', e);
-  }
+    data.sort((a,b)=> new Date(b.date)-new Date(a.date))
+        .slice(0,3)
+        .forEach(item=>{
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="news.html#${item.date}">${item.title}</a ><span>${item.date}</span>`;
+          newsList.appendChild(li);
+        });
+
+  } catch(e) { console.error("加载最新新闻失败", e); }
 }
 
 // 首次加载
 loadLatestNews();
-// 每隔 5 分钟自动刷新
-setInterval(loadLatestNews, 5*60*1000);
+// 每隔5分钟刷新一次
+setInterval(loadLatestNews,5*60*1000);
 </script>
 
 </body>
