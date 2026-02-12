@@ -130,7 +130,7 @@ body{
 <div class="block">
 <h3>🩵🩷NEWS🩷🩵</h3>
 <p>站点更新与通知。</p >
-<a href="news.html">璀璨之路 →</a >
+<a href=" ">璀璨之路 →</a >
 </div>
 
 <div class="block">
@@ -171,32 +171,32 @@ data-page-title="星途璀璨">
 </footer>
 
 <script>
-const canvas=document.getElementById("particle-canvas");
-const ctx=canvas.getContext("2d");
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
 
-function resize(){
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 resize();
-window.addEventListener("resize",resize);
+window.addEventListener("resize", resize);
 
-const mouse={x:null,y:null};
-window.addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-window.addEventListener("touchmove",e=>{mouse.x=e.touches[0].clientX;mouse.y=e.touches[0].clientY;});
+const mouse = {x:null, y:null};
+window.addEventListener("mousemove", e=>{mouse.x=e.clientX; mouse.y=e.clientY;});
+window.addEventListener("touchmove", e=>{mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY;});
 
-const colors=["rgba(255,182,210,0.9)","rgba(173,216,230,0.7)"]; // 粉色和蓝色
-const particles=[];
-const baseCount=70;
+const colors = ["rgba(255,182,210,0.9)", "rgba(173,216,230,0.7)"]; // 粉色和蓝色
+const particles = [];
+const baseCount = 70;
 
 // 初始漂浮粒子
 for(let i=0;i<baseCount;i++){
   particles.push({
-    x:Math.random()*canvas.width,
-    y:Math.random()*canvas.height,
-    vx:(Math.random()-0.5)*0.6,
-    vy:(Math.random()-0.5)*0.6,
-    size:Math.random()*2+1,
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    vx: (Math.random()-0.5)*0.6,
+    vy: (Math.random()-0.5)*0.6,
+    size: Math.random()*2+1,
     color: colors[Math.floor(Math.random()*colors.length)],
     life: Infinity // 永久漂浮
   });
@@ -204,19 +204,19 @@ for(let i=0;i<baseCount;i++){
 
 // 点击生成星尘爆炸粒子
 window.addEventListener("click", e=>{
-  const ripple=document.createElement("div");
-  ripple.className="ripple";
-  ripple.style.left=e.clientX+"px";
-  ripple.style.top=e.clientY+"px";
+  const ripple = document.createElement("div");
+  ripple.className = "ripple";
+  ripple.style.left = e.clientX+"px";
+  ripple.style.top = e.clientY+"px";
   document.body.appendChild(ripple);
   setTimeout(()=>ripple.remove(),1200);
 
   for(let i=0;i<50;i++){
     particles.push({
-      x:e.clientX,
-      y:e.clientY,
-      vx:(Math.random()-0.5)*6,
-      vy:(Math.random()-0.5)*6,
+      x: e.clientX,
+      y: e.clientY,
+      vx: (Math.random()-0.5)*6,
+      vy: (Math.random()-0.5)*6,
       size: Math.random()*2+1.5,
       color: colors[Math.floor(Math.random()*colors.length)],
       life: 80 + Math.random()*40 // 星尘寿命
@@ -253,13 +253,16 @@ function draw(){
       p.life--;
       p.vx *= 0.95;
       p.vy *= 0.95;
-      if(p.life<=0) {particles.splice(i,1); continue;}
+      if(p.life<=0){particles.splice(i,1); continue;}
     }
 
-    // 绘制粒子（纯色，无中心白光）
-    ctx.fillStyle = p.color;
+    // 绘制粒子（纯色 + 光晕）
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*6);
+    gradient.addColorStop(0, p.color);
+    gradient.addColorStop(1, "rgba(255,255,255,0)"); // 光晕
+    ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(p.x,p.y,p.size*4,0,Math.PI*2);
+    ctx.arc(p.x, p.y, p.size*6, 0, Math.PI*2);
     ctx.fill();
   }
 
