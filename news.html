@@ -8,240 +8,282 @@
 <style>
 @font-face {
   font-family: "Smiley Sans";
-  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Regular.otf")
-       format("opentype");
+  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Regular.otf") format("opentype");
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
 
 body{
   font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   min-height:100vh;
-  overflow-x:hidden;
   background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
   background-attachment:fixed;
-  padding:100px 20px;
+  overflow-x:hidden;
+  cursor: pointer;
 }
 
-/* ✨ 粒子层 */
-.particles{
+/* 粒子画布 */
+#particle-canvas{
   position:fixed;
   top:0;
   left:0;
   width:100%;
   height:100%;
+  z-index:0;
   pointer-events:none;
-  overflow:hidden;
+}
+
+/* 点击扩散波 */
+.ripple{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,
+    rgba(255,182,210,0.9) 0%,
+    rgba(173,216,230,0.7) 40%,
+    rgba(255,255,255,0.2) 70%,
+    transparent 100%);
+  animation:rippleAnim 1.2s ease-out forwards;
   z-index:0;
 }
 
-.particle{
-  position:absolute;
-  border-radius:50%;
-  opacity:0.4;
-  animation:float linear infinite;
+@keyframes rippleAnim{
+  from{width:0;height:0;opacity:1;}
+  to{width:400px;height:400px;opacity:0;}
 }
 
-@keyframes float{
-  from{transform:translateY(100vh) scale(1);}
-  to{transform:translateY(-10vh) scale(1.2);}
+/* 布局 */
+.main-wrapper{
+  position:relative;
+  z-index:1;
+  display:flex;
+  justify-content:center;
+  padding:80px 30px;
 }
 
-/* 页面标题 */
+.layout{
+  width:100%;
+  max-width:1200px;
+  display:flex;
+  gap:50px;
+}
+
+.left{flex:3;display:flex;flex-direction:column;gap:30px;}
+.right{flex:7;display:flex;flex-direction:column;gap:40px;}
+
+.block,.notice{
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);
+  border-radius:22px;
+  padding:40px 42px;
+  box-shadow:0 20px 45px rgba(0,0,0,.12);
+}
+
+.notice.message{
+  flex:1;
+  min-height:700px;
+  display:flex;
+  flex-direction:column;
+}
+
+#cusdis_thread iframe{
+  width:100%!important;
+  min-height:800px!important;
+  border:none!important;
+}
+
+/* 标题蓝粉渐变 */
 .page-title{
   text-align:center;
   font-size:30px;
-  color:#fff;
-  letter-spacing:3px;
+  font-weight:700;
   margin-bottom:80px;
-  font-weight:700;
-  position:relative;
-  z-index:1;
 }
 
-/* 时间线 */
-.timeline{
-  position:relative;
-  max-width:1000px;
-  margin:auto;
-  z-index:1;
+.page-title-gradient{
+  background: linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display:inline-block;
 }
 
-.timeline::before{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translateX(-50%);
-  width:4px;
-  height:100%;
-  background:rgba(255,255,255,0.5);
-  border-radius:10px;
-}
-
-.item{
-  position:relative;
-  width:50%;
-  padding:20px 40px;
-  margin-bottom:60px;
-}
-
-.item.left{left:0;text-align:right;}
-.item.right{left:50%;}
-
-.item::before{
-  content:"";
-  position:absolute;
-  top:30px;
-  width:18px;
-  height:18px;
-  background:#fff;
-  border:4px solid #f2b3c6;
-  border-radius:50%;
-  z-index:2;
-}
-
-.item.left::before{right:-9px;}
-.item.right::before{left:-9px;}
-
-.card{
-  background:rgba(255,255,255,0.85);
-  backdrop-filter:blur(12px);
-  border-radius:22px;
-  padding:28px 30px;
-  box-shadow:0 20px 45px rgba(0,0,0,.12);
-  transition:.35s;
-}
-
-.card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 30px 60px rgba(0,0,0,.2);
-}
-
-.date{
-  font-size:13px;
-  color:#888;
-  margin-bottom:10px;
-}
-
-.title{
-  font-size:18px;
-  font-weight:700;
-  margin-bottom:10px;
-}
-
-.content{
-  font-size:14px;
-  line-height:1.9;
-  color:#555;
-}
-
-.back{
-  text-align:center;
-  margin-top:80px;
-  position:relative;
-  z-index:1;
-}
-
-.back a{
-  color:#fff;
-  text-decoration:none;
-  font-size:16px;
+/* NEWS 栏 */
+.news-item-title, .news-item-content{
+  font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:20px;
   font-weight:600;
+  margin:6px 0 16px;
+  display:inline-block;
 }
 
-/* 手机 */
+.news-item-date{
+  font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14px;
+  color:#999;
+  margin-bottom:6px;
+}
+
+/* 渐变文字效果，每个字独立渐变 */
+.news-gradient{
+  background: linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display:inline-block;
+}
+
+.notice-date{font-size:14px;color:#999;}
+.notice-title{font-size:24px;margin:10px 0 20px;font-weight:600;}
+.notice p{font-size:16px;line-height:2.1;color:#555;}
+
 @media(max-width:900px){
-
-  .timeline::before{left:10px;}
-
-  .item{
-    width:100%;
-    padding-left:40px;
-    padding-right:20px;
-  }
-
-  .item.left,.item.right{
-    left:0;
-    text-align:left;
-  }
-
-  .item::before{left:1px;}
-}
-
-footer{
-  text-align:center;
-  font-size:13px;
-  color:#eee;
-  margin-top:60px;
-  position:relative;
-  z-index:1;
+  .layout{flex-direction:column;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="particles" id="particles"></div>
+<canvas id="particle-canvas"></canvas>
 
-<div class="page-title">🩵🩷 璀璨之路 🩷🩵</div>
+<div class="main-wrapper">
+<div class="layout">
 
-<div class="timeline" id="timeline"></div>
+<div class="left">
 
+<div class="block">
+<h3 class="page-title page-title-gradient">🩵🩷 璀璨之路 🩷🩵</h3>
+<div id="timeline">
+  <!-- 最新三条新闻会自动插入这里 -->
+</div>
 <div class="back">
   <a href=" ">← 返回首页</a >
 </div>
+</div>
 
-<footer>
+</div>
+</div>
+</div>
+
+<footer style="text-align:center;font-size:13px;color:#eee;padding:30px 0;position:relative;z-index:1;">
 © 2026 LUMU
 </footer>
 
 <script>
-/* 🌸 动态拉取 news.json 文件 */
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
+
+function resize() {canvas.width = window.innerWidth; canvas.height = window.innerHeight;}
+resize();
+window.addEventListener("resize", resize);
+
+const mouse = {x:null, y:null};
+window.addEventListener("mousemove", e=>{mouse.x=e.clientX; mouse.y=e.clientY;});
+window.addEventListener("touchmove", e=>{mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY;});
+
+const colors = ["rgba(255,182,210,0.9)", "rgba(173,216,230,0.7)"];
+const particles = [];
+const baseCount = 70;
+
+for(let i=0;i<baseCount;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    vx: (Math.random()-0.5)*0.6,
+    vy: (Math.random()-0.5)*0.6,
+    size: Math.random()*2+1,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    life: Infinity
+  });
+}
+
+window.addEventListener("click", e=>{
+  const ripple = document.createElement("div");
+  ripple.className = "ripple";
+  ripple.style.left = e.clientX+"px";
+  ripple.style.top = e.clientY+"px";
+  document.body.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),1200);
+
+  for(let i=0;i<50;i++){
+    particles.push({
+      x: e.clientX,
+      y: e.clientY,
+      vx: (Math.random()-0.5)*6,
+      vy: (Math.random()-0.5)*6,
+      size: Math.random()*2+1.5,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      life: 80 + Math.random()*40
+    });
+  }
+});
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let i=particles.length-1;i>=0;i--){
+    let p = particles[i];
+
+    if(p.life === Infinity && mouse.x !== null){
+      let dx = mouse.x - p.x;
+      let dy = mouse.y - p.y;
+      let dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist < 120){ p.x += dx*0.02; p.y += dy*0.02; }
+    }
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+    if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+    if(p.life !== Infinity){
+      p.life--;
+      p.vx *= 0.95;
+      p.vy *= 0.95;
+      if(p.life<=0){particles.splice(i,1); continue;}
+    }
+
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*6);
+    gradient.addColorStop(0, p.color);
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size*6, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ================== NEWS 模块自动拉取 ==================
+const timeline = document.getElementById("timeline");
+
 fetch('news.json')
   .then(res=>res.json())
-  .then(newsData=>{
-      // 按日期倒序
-      newsData.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  .then(data=>{
+    data.sort((a,b)=> new Date(b.date)-new Date(a.date));
+    data.forEach((item,index)=>{
+      const side = index % 2 === 0 ? "right":"left";
+      const div = document.createElement("div");
+      div.className = "item " + side;
 
-      const timeline = document.getElementById("timeline");
+      const titleChars = item.title.split('').map(c=>`<span class="news-gradient">${c}</span>`).join('');
+      const contentChars = item.content.split('').map(c=>`<span class="news-gradient">${c}</span>`).join('');
 
-      newsData.forEach((item,index)=>{
-          const side = index % 2 === 0 ? "right" : "left";
-
-          const div = document.createElement("div");
-          div.className = "item " + side;
-
-          div.innerHTML = `
-            <div class="card">
-              <div class="date">${item.date}</div>
-              <div class="title">${item.title}</div>
-              <div class="content">${item.content}</div>
-            </div>
-          `;
-
-          timeline.appendChild(div);
-      });
+      div.innerHTML = `
+        <div class="card">
+          <div class="date">${item.date}</div>
+          <div class="title">${titleChars}</div>
+          <div class="content">${contentChars}</div>
+        </div>
+      `;
+      timeline.appendChild(div);
+    });
   })
-  .catch(err=>console.error("拉取新闻失败:", err));
-
-/* 🌸 粒子生成 */
-const particleContainer = document.getElementById("particles");
-
-for(let i=0;i<25;i++){
-  const p = document.createElement("div");
-  p.className="particle";
-
-  const size = Math.random()*8+4;
-  p.style.width=size+"px";
-  p.style.height=size+"px";
-  p.style.left=Math.random()*100+"%";
-  p.style.background = Math.random()>0.5 ? "#ffffff" : "#ffd1ec";
-  p.style.animationDuration = (Math.random()*15+10)+"s";
-  p.style.animationDelay = Math.random()*10+"s";
-
-  particleContainer.appendChild(p);
-}
+  .catch(err=>console.error(err));
 </script>
 
 </body>
