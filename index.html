@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<title>🩵🩷00星途璀璨🩷🩵</title>
+<title>🩵🩷01星途璀璨🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- 得意黑 -->
@@ -20,32 +20,28 @@
 body{
   font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   margin:0;
+  background:linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
   min-height:100vh;
-  background:linear-gradient(135deg,#f6c1d0 0%,#6ec6d9 100%);
-  display:flex;
-  flex-direction:column;
 }
 
-/* ===== 主体布局 ===== */
+/* ===== 黄金比例布局 ===== */
 .layout{
   max-width:1200px;
   margin:80px auto;
-  padding:0 40px;
+  padding:0 30px;
   display:flex;
-  gap:60px;
-  align-items:stretch;   /* 关键：底端自动对齐 */
-  flex:1;
+  gap:50px;
 }
 
-/* ===== 左侧 3 ===== */
+/* ===== 左侧 30% ===== */
 .left{
   flex:3;
   display:flex;
   flex-direction:column;
-  gap:40px;
+  gap:30px;
 }
 
-/* ===== 右侧 7 ===== */
+/* ===== 右侧 70% ===== */
 .right{
   flex:7;
   display:flex;
@@ -53,74 +49,65 @@ body{
   gap:40px;
 }
 
-/* ===== 毛玻璃卡片 ===== */
+/* ===== 卡片通用 ===== */
 .block,
 .notice{
-  background:rgba(255,255,255,0.35);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-radius:28px;
-  padding:45px;
-  border:1px solid rgba(255,255,255,0.4);
-  box-shadow:0 15px 40px rgba(0,0,0,.08);
-  transition:all .4s ease;
-  flex:1;
+  background:#fff;
+  border-radius:22px;
+  padding:40px 42px;
+  box-shadow:0 20px 45px rgba(0,0,0,.12);
+  transition:all .3s ease;
 }
 
 .block:hover,
 .notice:hover{
-  transform:translateY(-6px);
-  box-shadow:0 20px 50px rgba(0,0,0,.12);
+  transform:translateY(-4px);
+  box-shadow:0 25px 55px rgba(0,0,0,.15);
 }
 
-/* ===== 左侧文字 ===== */
+/* ===== 左侧样式 ===== */
 .block h3{
-  font-size:20px;
-  margin-bottom:20px;
-  font-weight:600;
+  font-size:18px;
+  margin:0 0 18px;
 }
 
 .block p{
   font-size:15px;
-  line-height:2.1;
-  color:#444;
+  line-height:2;
+  color:#555;
 }
 
 .block a{
   font-size:15px;
+  color:#4ab7cc;
   text-decoration:none;
-  color:#3aa7c4;
   font-weight:600;
 }
 
-/* ===== 右侧文字 ===== */
+/* ===== 右侧样式 ===== */
 .notice-date{
   font-size:14px;
-  color:#777;
+  color:#999;
 }
 
 .notice-title{
-  font-size:26px;
-  margin:12px 0 20px;
-  font-weight:700;
-  text-align:center;
+  font-size:24px;
+  margin:10px 0 20px;
+  font-weight:600;
 }
 
 .notice p{
   font-size:16px;
-  line-height:2.2;
-  color:#444;
-  text-align:center;
+  line-height:2.1;
+  color:#555;
 }
 
-/* 留言板高度拉满 */
+/* 留言板拉高 */
 .notice.message{
-  min-height:580px;
-  display:flex;
-  flex-direction:column;
+  min-height:550px;
 }
 
-/* 手机 */
+/* 手机适配 */
 @media(max-width:900px){
   .layout{
     flex-direction:column;
@@ -197,7 +184,7 @@ body{
 
 </div>
 
-<footer style="text-align:center;font-size:13px;color:#ffffffaa;margin:40px 0;">
+<footer style="text-align:center;font-size:13px;color:#eee;margin:40px 0;">
   © 2026 LUMU
 </footer>
 
