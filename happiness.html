@@ -131,69 +131,88 @@ body{
 
 <script>
 fetch("diary.json")
-.then(res=>res.json())
-.then(list=>{
-  list.sort().reverse();
+  .then(res => res.json())
+  .then(list => {
 
-  const tree={};
+    const treeDiv = document.getElementById("tree");
+    const postsDiv = document.getElementById("posts");
 
-  list.forEach(date=>{
-    const [y,m,d]=date.split("-");
-    if(!tree[y]) tree[y]={};
-    if(!tree[y][m]) tree[y][m]=[];
-    tree[y][m].push(date);
-  });
+    const tree = {};
 
-  const treeDiv=document.getElementById("tree");
-  const postsDiv=document.getElementById("posts");
+    // 构建树结构
+    list.forEach(item => {
+      const y = item.year;
+      const m = item.month;
+      const d = item.day;
 
-  Object.keys(tree).sort().reverse().forEach(year=>{
-    const yDiv=document.createElement("div");
-    yDiv.className="year";
-    yDiv.textContent=year;
-    treeDiv.appendChild(yDiv);
+      if (!tree[y]) tree[y] = {};
+      if (!tree[y][m]) tree[y][m] = [];
+      tree[y][m].push(item);
+    });
 
-    Object.keys(tree[year]).sort().reverse().forEach(month=>{
-      const mDiv=document.createElement("div");
-      mDiv.className="month";
-      mDiv.textContent=month+"月";
-      treeDiv.appendChild(mDiv);
+    // 年份循环
+    Object.keys(tree).sort().reverse().forEach(y => {
 
-      yDiv.onclick=()=>{
-        document.querySelectorAll(".month").forEach(el=>el.style.display="none");
-        document.querySelectorAll(".day").forEach(el=>el.style.display="none");
-        mDiv.style.display="block";
-      };
+      const yearDiv = document.createElement("div");
+      yearDiv.className = "year";
+      yearDiv.textContent = y;
+      yearDiv.onclick = () => yearDiv.classList.toggle("open");
 
-      tree[year][month].forEach(date=>{
-        const dDiv=document.createElement("div");
-        dDiv.className="day";
-        dDiv.textContent=date;
-        treeDiv.appendChild(dDiv);
+      const monthWrap = document.createElement("div");
+      monthWrap.className = "month";
 
-        mDiv.onclick=()=>{
-          document.querySelectorAll(".day").forEach(el=>el.style.display="none");
-          dDiv.style.display="block";
+      // 月份循环
+      Object.keys(tree[y]).sort().reverse().forEach(m => {
+
+        const monthDiv = document.createElement("div");
+        monthDiv.className = "month-title";
+        monthDiv.textContent = m;
+
+        const daysDiv = document.createElement("div");
+        daysDiv.className = "day";
+
+        tree[y][m]
+          .sort((a,b)=>b.day - a.day)
+          .forEach(item => {
+
+            const a = document.createElement("a");
+            a.textContent = item.day;
+            a.href = "#";
+
+            a.onclick = (e)=>{
+              e.preventDefault();
+
+              fetch(item.file)
+                .then(res=>res.text())
+                .then(html=>{
+                  postsDiv.innerHTML = `
+                    <div class="section">
+                      <h3>${item.year}-${item.month}-${item.day}</h3>
+                      ${html}
+                    </div>
+                  `;
+                });
+            };
+
+            daysDiv.appendChild(a);
+          });
+
+        monthDiv.onclick = e=>{
+          e.stopPropagation();
+          daysDiv.style.display =
+            daysDiv.style.display==="block"?"none":"block";
         };
 
-        dDiv.onclick=()=>{
-          postsDiv.innerHTML="";
-          loadPost(date);
-        };
+        monthWrap.appendChild(monthDiv);
+        monthWrap.appendChild(daysDiv);
       });
-    });
-  });
 
-  function loadPost(date){
-    fetch(`diary/${date.slice(0,4)}/${date.slice(5,7)}/${date}.html`)
-    .then(res=>res.text())
-    .then(html=>{
-      const section=document.createElement("div");
-      section.className="section";
-      section.innerHTML=`<h3>${date}</h3>`+html;
-      postsDiv.appendChild(section);
+      yearDiv.appendChild(monthWrap);
+      treeDiv.appendChild(yearDiv);
     });
-  }
+
+  });
+</script>
 
   /* 默认显示最新 */
   if(list.length>0){
