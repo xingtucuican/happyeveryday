@@ -1,279 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>🩵🩷 星途璀璨 🩵🩷</title>
+<meta charset="UTF-8" />
+<title>🩵🩷666星途璀璨🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- 得意黑 -->
 <style>
 @font-face {
   font-family: "Smiley Sans";
-  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Oblique.otf")
+  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Regular.otf")
        format("opentype");
 }
-</style>
 
-<style>
-body {
-  font-family: "Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  background: linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
-  margin: 0;
-  padding: 0;
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+
+body{
+  font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+  cursor: pointer;
+}
+
+/* 粒子画布 */
+#particle-canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* 点击扩散波 */
+.ripple{
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,
+    rgba(255,182,210,0.9) 0%,
+    rgba(173,216,230,0.7) 40%,
+    rgba(255,255,255,0.2) 70%,
+    transparent 100%);
+  animation:rippleAnim 1.2s ease-out forwards;
+  z-index:0;
+}
+
+@keyframes rippleAnim{
+  from{width:0;height:0;opacity:1;}
+  to{width:400px;height:400px;opacity:0;}
 }
 
 /* 布局 */
-.layout {
-  max-width: 1100px;
-  margin: 60px auto;
-  display: flex;
-  gap: 30px;
-  padding: 0 20px;
+.main-wrapper{
+  position:relative;
+  z-index:1;
+  display:flex;
+  justify-content:center;
+  padding:80px 30px;
 }
 
-/* 左侧栏 */
-.sidebar {
-  width: 240px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+.layout{
+  width:100%;
+  max-width:1200px;
+  display:flex;
+  gap:50px;
 }
 
-.sidebar h2 {
-  font-size: 16px;
-  margin: 0 0 16px;
+.left{flex:3;display:flex;flex-direction:column;gap:30px;}
+.right{flex:7;display:flex;flex-direction:column;gap:40px;}
+
+.block,.notice{
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(12px);
+  border-radius:22px;
+  padding:40px 42px;
+  box-shadow:0 20px 45px rgba(0,0,0,.12);
 }
 
-/* 月份目录 */
-.month-title {
-  cursor: pointer;
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 6px;
-}
-.month ul {
-  list-style: none;
-  padding-left: 10px;
-  margin: 0;
-  display: none;
-}
-.month.open ul { display:block; }
-.month li { margin: 6px 0; }
-.month a {
-  font-size: 13px;
-  color: #777;
-  text-decoration: none;
-}
-.month a.active {
-  color: #000;
-  font-weight: 600;
+.notice.message{
+  flex:1;
+  min-height:700px;
+  display:flex;
+  flex-direction:column;
 }
 
-/* 侧栏留言提示卡片 */
-.sidebar-comment {
-  margin-top: 28px;
-  padding: 16px;
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    rgba(74,183,204,0.18),
-    rgba(242,179,198,0.18)
-  );
+#cusdis_thread iframe{
+  width:100%!important;
+  min-height:800px!important;
+  border:none!important;
 }
 
-.sidebar-comment h2 {
-  font-size: 15px;
-  margin: 0 0 8px;
-}
+.block h3{font-size:18px;margin-bottom:18px;}
+.block p{font-size:15px;line-height:2;color:#555;}
+.block a{font-size:15px;color:#4ab7cc;text-decoration:none;font-weight:600;}
 
-.sidebar-comment p {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.7;
-}
+.notice-date{font-size:14px;color:#999;}
+.notice-title{font-size:24px;margin:10px 0 20px;font-weight:600;}
+.notice p{font-size:16px;line-height:2.1;color:#555;}
 
-.sidebar-comment a {
-  font-size: 13px;
-  color: #4ab7cc;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-/* 正文 */
-.container {
-  flex: 1;
-  background: #fff;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-}
-
-.date {
-  font-size: 13px;
-  color: #999;
-  margin-bottom: 12px;
-}
-
-h1 {
-  font-size: 28px;
-  text-align: center;
-  margin: 0 0 24px;
-  background: linear-gradient(90deg,#4ab7cc,#f2b3c6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.content {
-  font-size: 16px;
-  line-height: 2;
-  color: #333;
-}
-
-.divider {
-  margin: 40px 0;
-  border-top: 1px dashed #ddd;
-}
-
-footer {
-  text-align: center;
-  font-size: 13px;
-  color: #aaa;
-  margin-top: 40px;
-}
-
-/* 手机端 */
-@media (max-width:768px) {
-  .layout { flex-direction: column; }
-  .sidebar { width:100%; }
+@media(max-width:900px){
+  .layout{flex-direction:column;}
 }
 </style>
 </head>
 
 <body>
 
+<canvas id="particle-canvas"></canvas>
+
+<div class="main-wrapper">
 <div class="layout">
 
-<!-- 左侧 -->
-<aside class="sidebar">
-  <h2>🩵🩷穆橹</h2>
-  <div id="diary-menu"></div>
+<div class="left">
 
-  <div class="sidebar-comment">
-    <h2>🩵🩷幸福时刻</h2>
-    <p>
-      祝你们星途璀璨，<br>
-      也祝愿幸福降临我们的手心
-    </p >
-    <a href=" ">前往幸福 →</a >
-  </div>
-</aside>
-
-<!-- 正文 -->
-<main class="container">
-  <div class="date">2026-01-21</div>
-  <h1>🩵🩷 一觉醒来是清晨 🩵🩷</h1>
-
-  <div class="content">
-    <p>大家好，我是 YSLNS。<br>
-       这是一个为喜欢而留下的角落。<br>
-       在这里希望可以慢慢记录，<br>
-       记录他们带给我们以及我的感动、陪伴，生活激励，<br>
-       以及那些让我们继续向前的小小光亮。<br>
-       愿幸福降临在我们每一个人的手心。
-
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- 留言区 -->
-  <section id="comments">
-
-    <p id="readonly-tip" style="
-      text-align:center;
-      font-size:13px;
-      color:#aaa;
-      margin-bottom:14px;
-      display:none;">
-      这里记录着<br>
-           每一个幸福时刻🩵🩷每一段璀璨星光
-    </p >
-
-    <div id="cusdis_thread"
-      data-host="https://cusdis.com"
-      data-app-id="6bd954b7-e2b4-4206-a1c3-3072cecfc326"
-      data-page-id="index"
-      data-page-title="一觉醒来是清晨"
-      data-theme="light">
-    </div>
-
-    <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
-  </section>
-
-  <footer>© 2026 LUMU</footer>
-</main>
+<div class="block">
+<h3>🩵🩷一切的开始🩷🩵</h3>
+<p>
+大家好<br>
+这是一个为喜欢而留下的角落<br>
+愿幸福降临在我们每一个人的手心
+</p >
 </div>
 
-<!-- 自动目录 -->
+<div class="block">
+<h3>🩵🩷NEWS🩷🩵</h3>
+<p>站点更新与通知。</p >
+<a href="news.html">璀璨之路 →</a >
+</div>
+
+<div class="block">
+<h3>🩵🩷幸福时刻🩷🩵</h3>
+<p>祝你们星途璀璨</p >
+<a href="happiness.html">前往幸福 →</a >
+</div>
+
+</div>
+
+<div class="right">
+
+<div class="notice">
+<div class="notice-date">2026-02-09</div>
+<div class="notice-title">🩵🩷 一觉醒来是清晨 🩷🩵</div>
+<p>记录每一个幸福时刻</p >
+</div>
+
+<div class="notice message">
+<div class="notice-title">留言板</div>
+
+<div id="cusdis_thread"
+data-host="https://cusdis.com"
+data-app-id="6bd954b7-e2b4-4206-a1c3-3072cecfc326"
+data-page-id="global-board"
+data-page-title="星途璀璨">
+</div>
+
+<script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
+</div>
+
+</div>
+</div>
+</div>
+
+<footer style="text-align:center;font-size:13px;color:#eee;padding:30px 0;position:relative;z-index:1;">
+© 2026 LUMU
+</footer>
+
 <script>
-const diaries=[
-{date:"2026-01-21",file:"index.html"},
-{date:"2026-01-20",file:"2026-01-20.html"}
-];
-const menu=document.getElementById("diary-menu");
-const current=location.pathname.split("/").pop()||"index.html";
-const grouped={};
-diaries.forEach(d=>{
-const m=d.date.slice(0,7);
-(grouped[m]=grouped[m]||[]).push(d);
-});
-Object.keys(grouped).reverse().forEach(m=>{
-const div=document.createElement("div");
-div.className="month";
-const t=document.createElement("div");
-t.className="month-title";
-t.textContent=m;
-t.onclick=()=>div.classList.toggle("open");
-const ul=document.createElement("ul");
-grouped[m].forEach(d=>{
-const a=document.createElement("a");
-a.href=d.file;
-a.textContent=d.date.slice(8);
-if(d.file===current){a.classList.add("active");div.classList.add("open");}
-const li=document.createElement("li");
-li.appendChild(a);
-ul.appendChild(li);
-});
-div.appendChild(t);div.appendChild(ul);menu.appendChild(div);
-});
-</script>
+const canvas = document.getElementById("particle-canvas");
+const ctx = canvas.getContext("2d");
 
-<!-- 🕊 只读模式控制 -->
-<script>
-const READ_ONLY = false; // ← 改成ture/ false 即可开放留言
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener("resize", resize);
 
-function applyReadOnlyMode() {
-  if (!READ_ONLY) return;
+const mouse = {x:null, y:null};
+window.addEventListener("mousemove", e=>{mouse.x=e.clientX; mouse.y=e.clientY;});
+window.addEventListener("touchmove", e=>{mouse.x=e.touches[0].clientX; mouse.y=e.touches[0].clientY;});
 
-  document.getElementById("readonly-tip").style.display = "block";
+const colors = ["rgba(255,182,210,0.9)", "rgba(173,216,230,0.7)"]; // 粉色和蓝色
+const particles = [];
+const baseCount = 70;
 
-  const observer = new MutationObserver(() => {
-    const iframe = document.querySelector('#cusdis_thread iframe');
-    if (!iframe) return;
-    try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      const form = doc.querySelector('form');
-      if (form) {
-        form.style.display = "none";
-        observer.disconnect();
-      }
-    } catch(e){}
+// 初始漂浮粒子
+for(let i=0;i<baseCount;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    vx: (Math.random()-0.5)*0.6,
+    vy: (Math.random()-0.5)*0.6,
+    size: Math.random()*2+1,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    life: Infinity // 永久漂浮
   });
-
-  observer.observe(document.body,{childList:true,subtree:true});
 }
 
-applyReadOnlyMode();
+// 点击生成星尘爆炸粒子
+window.addEventListener("click", e=>{
+  const ripple = document.createElement("div");
+  ripple.className = "ripple";
+  ripple.style.left = e.clientX+"px";
+  ripple.style.top = e.clientY+"px";
+  document.body.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),1200);
+
+  for(let i=0;i<50;i++){
+    particles.push({
+      x: e.clientX,
+      y: e.clientY,
+      vx: (Math.random()-0.5)*6,
+      vy: (Math.random()-0.5)*6,
+      size: Math.random()*2+1.5,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      life: 80 + Math.random()*40 // 星尘寿命
+    });
+  }
+});
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let i=particles.length-1;i>=0;i--){
+    let p = particles[i];
+
+    // 鼠标吸引效果
+    if(p.life === Infinity && mouse.x !== null){
+      let dx = mouse.x - p.x;
+      let dy = mouse.y - p.y;
+      let dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist < 120){
+        p.x += dx*0.02;
+        p.y += dy*0.02;
+      }
+    }
+
+    // 移动
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+    if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+    // 星尘粒子寿命衰减
+    if(p.life !== Infinity){
+      p.life--;
+      p.vx *= 0.95;
+      p.vy *= 0.95;
+      if(p.life<=0){particles.splice(i,1); continue;}
+    }
+
+    // 绘制粒子（纯色 + 光晕）
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size*6);
+    gradient.addColorStop(0, p.color);
+    gradient.addColorStop(1, "rgba(255,255,255,0)"); // 光晕
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size*6, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
