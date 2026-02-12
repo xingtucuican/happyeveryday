@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<title>🩵🩷星途璀璨🩷🩵</title>
+<title>🩵🩷6星途璀璨🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -22,18 +21,18 @@ body{
   background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
   background-attachment:fixed;
   overflow-x:hidden;
+  cursor: pointer;
 }
 
-/* ===== 粒子画布 ===== */
-.particles{
+/* 粒子画布 */
+#particle-canvas{
   position:fixed;
   top:0;
   left:0;
   width:100%;
   height:100%;
-  pointer-events:none;
-  overflow:hidden;
   z-index:0;
+  pointer-events:none;
 }
 
 /* 点击扩散波 */
@@ -44,7 +43,7 @@ body{
   transform:translate(-50%,-50%);
   background:radial-gradient(circle,
     rgba(255,182,210,0.9) 0%,
-    rgba(173,216,230,0.6) 40%,
+    rgba(173,216,230,0.7) 40%,
     rgba(255,255,255,0.2) 70%,
     transparent 100%);
   animation:rippleAnim 1.2s ease-out forwards;
@@ -56,7 +55,7 @@ body{
   to{width:400px;height:400px;opacity:0;}
 }
 
-/* ===== 布局 ===== */
+/* 布局 */
 .main-wrapper{
   position:relative;
   z-index:1;
@@ -131,13 +130,12 @@ body{
 <div class="block">
 <h3>🩵🩷NEWS🩷🩵</h3>
 <p>站点更新与通知。</p >
-<a href="news.html">璀璨之路 →</a >
+<a href=" ">璀璨之路 →</a >
 </div>
 
 <div class="block">
 <h3>🩵🩷幸福时刻🩷🩵</h3>
-<p>星途璀璨<br>
-   愿幸福降临我们的手心</p >
+<p>祝你们星途璀璨</p >
 <a href="happiness.html">前往幸福 →</a >
 </div>
 
@@ -184,71 +182,94 @@ resize();
 window.addEventListener("resize",resize);
 
 const mouse={x:null,y:null};
-window.addEventListener("mousemove",e=>{
-  mouse.x=e.clientX;
-  mouse.y=e.clientY;
-});
-window.addEventListener("touchmove",e=>{
-  mouse.x=e.touches[0].clientX;
-  mouse.y=e.touches[0].clientY;
-});
+window.addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+window.addEventListener("touchmove",e=>{mouse.x=e.touches[0].clientX;mouse.y=e.touches[0].clientY;});
 
+const colors=["rgba(255,182,210,0.9)","rgba(173,216,230,0.7)"]; // 粉色和蓝色
 const particles=[];
-const count=70;
+const baseCount=70;
 
-for(let i=0;i<count;i++){
+// 初始漂浮粒子
+for(let i=0;i<baseCount;i++){
   particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
     vx:(Math.random()-0.5)*0.6,
     vy:(Math.random()-0.5)*0.6,
-    size:Math.random()*2+1
+    size:Math.random()*2+1,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    life: Infinity // 永久漂浮
   });
 }
 
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  particles.forEach(p=>{
-    let dx=mouse.x-p.x;
-    let dy=mouse.y-p.y;
-    let dist=Math.sqrt(dx*dx+dy*dy);
-
-    if(dist<120){
-      p.x+=dx*0.02;
-      p.y+=dy*0.02;
-    }
-
-    p.x+=p.vx;
-    p.y+=p.vy;
-
-    if(p.x<0||p.x>canvas.width) p.vx*=-1;
-    if(p.y<0||p.y>canvas.height) p.vy*=-1;
-
-    const gradient=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
-    gradient.addColorStop(0,"rgba(255,182,210,0.9)");
-    gradient.addColorStop(0.5,"rgba(173,216,230,0.5)");
-    gradient.addColorStop(1,"rgba(255,255,255,0)");
-
-    ctx.fillStyle=gradient;
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.size*6,0,Math.PI*2);
-    ctx.fill();
-  });
-
-  requestAnimationFrame(draw);
-}
-draw();
-
-/* 点击扩散波 */
-window.addEventListener("click",e=>{
+// 点击生成星尘爆炸粒子
+window.addEventListener("click", e=>{
   const ripple=document.createElement("div");
   ripple.className="ripple";
   ripple.style.left=e.clientX+"px";
   ripple.style.top=e.clientY+"px";
   document.body.appendChild(ripple);
   setTimeout(()=>ripple.remove(),1200);
+
+  for(let i=0;i<50;i++){
+    particles.push({
+      x:e.clientX,
+      y:e.clientY,
+      vx:(Math.random()-0.5)*6,
+      vy:(Math.random()-0.5)*6,
+      size: Math.random()*2+1.5,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      life: 80 + Math.random()*40 // 星尘寿命
+    });
+  }
 });
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let i=particles.length-1;i>=0;i--){
+    let p = particles[i];
+
+    // 鼠标吸引效果
+    if(p.life === Infinity && mouse.x !== null){
+      let dx = mouse.x - p.x;
+      let dy = mouse.y - p.y;
+      let dist = Math.sqrt(dx*dx+dy*dy);
+      if(dist < 120){
+        p.x += dx*0.02;
+        p.y += dy*0.02;
+      }
+    }
+
+    // 移动
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if(p.x<0||p.x>canvas.width) p.vx*=-1;
+    if(p.y<0||p.y>canvas.height) p.vy*=-1;
+
+    // 星尘粒子寿命衰减
+    if(p.life !== Infinity){
+      p.life--;
+      p.vx *= 0.95;
+      p.vy *= 0.95;
+      if(p.life<=0) {particles.splice(i,1); continue;}
+    }
+
+    // 绘制粒子
+    const gradient=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*6);
+    gradient.addColorStop(0,"#fff");
+    gradient.addColorStop(0.5,p.color);
+    gradient.addColorStop(1,"rgba(255,255,255,0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.size*6,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
