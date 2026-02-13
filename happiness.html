@@ -125,39 +125,90 @@ const index=document.getElementById("dateIndex")
 container.innerHTML=""
 index.innerHTML=""
 
-let comments = data.data || data
+const grouped={}
 
-comments.forEach(item=>{
+data.forEach(item=>{
+const [year,month,day]=item.date.split("-")
 
-const dateStr = item.createdAt
-  ? new Date(item.createdAt).toISOString().slice(0,10)
-  : item.date
+if(!grouped[year]) grouped[year]={}
+if(!grouped[year][month]) grouped[year][month]={}
+if(!grouped[year][month][day]) grouped[year][month][day]=[]
 
-const nickname = item.nickname || "匿名"
-const content = item.content || ""
+grouped[year][month][day].push(item)
+})
 
+for(const y in grouped){
+
+const yDiv=document.createElement("div")
+yDiv.innerHTML="▶ "+y
+yDiv.style.fontWeight="bold"
+yDiv.style.cursor="pointer"
+index.appendChild(yDiv)
+
+const yearBlock=document.createElement("div")
+yearBlock.style.display="none"
+index.appendChild(yearBlock)
+
+yDiv.onclick=()=>{
+yearBlock.style.display=
+yearBlock.style.display==="none"?"block":"none"
+}
+
+for(const m in grouped[y]){
+
+const mDiv=document.createElement("div")
+mDiv.innerHTML="　▶ "+m
+mDiv.style.cursor="pointer"
+yearBlock.appendChild(mDiv)
+
+const monthBlock=document.createElement("div")
+monthBlock.style.display="none"
+yearBlock.appendChild(monthBlock)
+
+mDiv.onclick=()=>{
+monthBlock.style.display=
+monthBlock.style.display==="none"?"block":"none"
+}
+
+for(const d in grouped[y][m]){
+
+const dDiv=document.createElement("div")
+dDiv.innerHTML="　　"+d
+dDiv.style.cursor="pointer"
+monthBlock.appendChild(dDiv)
+
+dDiv.onclick=()=>{
+container.innerHTML=""
+grouped[y][m][d].forEach(item=>{
 const card=document.createElement("div")
 card.className="card"
 card.innerHTML=`
-<div class="nickname">${nickname}</div>
-<div>${dateStr}</div>
-<div>${content}</div>
+<div class="nickname">${item.nickname}</div>
+<div>${item.date}</div>
+<div>${item.content}</div>
 `
 container.appendChild(card)
-
-const dateDiv=document.createElement("div")
-dateDiv.innerText=dateStr
-dateDiv.style.cursor="pointer"
-dateDiv.onclick=()=>{
-render(comments.filter(d=>{
-const dStr = d.createdAt
-? new Date(d.createdAt).toISOString().slice(0,10)
-: d.date
-return dStr===dateStr
-}))
+})
 }
-index.appendChild(dateDiv)
+}
+}
+}
 
+renderAll(data)
+}
+
+function renderAll(data){
+const container=document.getElementById("commentsContainer")
+container.innerHTML=""
+data.forEach(item=>{
+const card=document.createElement("div")
+card.className="card"
+card.innerHTML=`
+<div class="nickname">${item.nickname}</div>
+<div>${item.date}</div>
+<div>${item.content}</div>
+`
+container.appendChild(card)
 })
 }
 
