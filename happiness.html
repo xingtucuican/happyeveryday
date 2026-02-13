@@ -110,9 +110,9 @@ margin-bottom:6px;
 
 </div>
 
-<<script>
+<script>
 
-/* 粒子背景（保持原样） */
+/* 粒子背景 */
 const canvas=document.getElementById("particles")
 const ctx=canvas.getContext("2d")
 
@@ -150,9 +150,7 @@ requestAnimationFrame(draw)
 }
 draw()
 
-
-/* ===== 读取 diary.json ===== */
-
+/* 读取 diary.json */
 async function loadDiary(){
 try{
 const res=await fetch("diary.json?"+Date.now())
@@ -163,40 +161,12 @@ document.getElementById("dateIndex").innerHTML="暂无留言数据"
 }
 }
 
-
-/* ===== 树状结构处理 ===== */
-
-function buildTree(data){
-const map={}
-data.forEach(item=>{
-item.children=[]
-map[item.id]=item
-})
-
-const roots=[]
-data.forEach(item=>{
-if(item.parentId && map[item.parentId]){
-map[item.parentId].children.push(item)
-}else{
-roots.push(item)
-}
-})
-
-return roots
-}
-
-
-/* ===== 渲染 ===== */
-
 function render(data){
-
 const container=document.getElementById("commentsContainer")
 const index=document.getElementById("dateIndex")
 
 container.innerHTML=""
 index.innerHTML=""
-
-const tree=buildTree(data)
 
 const grouped={}
 
@@ -209,8 +179,6 @@ if(!grouped[year][month][day]) grouped[year][month][day]=[]
 
 grouped[year][month][day].push(item)
 })
-
-/* 左侧索引 */
 
 for(const y in grouped){
 
@@ -253,45 +221,37 @@ monthBlock.appendChild(dDiv)
 
 dDiv.onclick=()=>{
 container.innerHTML=""
-const filtered=data.filter(item=>item.date===`${y}-${m}-${d}`)
-renderTree(buildTree(filtered),container)
+grouped[y][m][d].forEach(item=>{
+createCard(container,item)
+})
 }
 }
 }
 }
 
-/* 默认显示全部 */
-renderTree(tree,container)
+renderAll(data)
 }
 
-
-/* ===== 树状渲染函数 ===== */
-
-function renderTree(nodes,container,level=0){
-
-nodes.forEach(node=>{
-
-const card=document.createElement("div")
-card.className="card"
-card.style.marginLeft=level*40+"px"
-
-card.innerHTML=`
-<div class="nickname">${node.nickname}</div>
-<div class="date">${node.date}</div>
-<div>${node.content}</div>
-`
-
-container.appendChild(card)
-
-if(node.children.length>0){
-renderTree(node.children,container,level+1)
-}
-
+function renderAll(data){
+const container=document.getElementById("commentsContainer")
+container.innerHTML=""
+data.forEach(item=>{
+createCard(container,item)
 })
 }
 
+function createCard(container,item){
+const card=document.createElement("div")
+card.className="card"
+card.innerHTML=`
+<div class="nickname">${item.nickname}</div>
+<div class="date">${item.date}</div>
+<div>${item.content}</div>
+`
+container.appendChild(card)
+}
 
-/* 自动刷新 */
+/* 自动刷新（30秒） */
 setInterval(loadDiary,30000)
 
 loadDiary()
