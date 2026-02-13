@@ -1,0 +1,34 @@
+name: Fetch Cusdis Comments
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch Cusdis Data
+        run: |
+          curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100" -o raw.json
+
+      - name: Convert to diary.json
+        run: |
+          jq '[.data[] | {
+            nickname: .nickname,
+            content: .content,
+            date: (.createdAt | split("T")[0])
+          }]' raw.json > diary.json
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add diary.json
+          git commit -m "update diary"
+    
