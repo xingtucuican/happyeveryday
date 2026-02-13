@@ -78,13 +78,13 @@ body{
 @keyframes glow{
   from{
     text-shadow:
-    0 0 5px rgba(255,255,255,0.6),
-    0 0 15px rgba(255,182,230,0.6);
+    0 0 5px rgba(121,203,216,0.6),
+    0 0 15px rgba(242,179,198,0.6);
   }
   to{
     text-shadow:
-    0 0 20px rgba(255,255,255,0.9),
-    0 0 40px rgba(255,182,230,0.9);
+    0 0 20px rgba(121,203,216,0.9),
+    0 0 40px rgba(242,179,198,0.9);
   }
 }
 
@@ -124,7 +124,7 @@ body{
   top:30px;
   width:18px;
   height:18px;
-  background:#fff;
+  background:#79cbd8;
   border:4px solid #f2b3c6;
   border-radius:50%;
   z-index:2;
@@ -205,8 +205,6 @@ footer{
   <span>璨</span>
   <span>之</span>
   <span>路</span>
-  <span>🩵</span>
-  <span>🩷</span>
 </div>
 
 <div class="timeline" id="timeline"></div>
@@ -215,7 +213,6 @@ footer{
 
 <script>
 
-/* 🌸 粒子靠近标题变亮 */
 const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -236,7 +233,8 @@ x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 r:Math.random()*3+1,
 dx:(Math.random()-0.5)*0.5,
-dy:(Math.random()-0.5)*0.5
+dy:(Math.random()-0.5)*0.5,
+color: Math.random()>0.5 ? "blue" : "pink"
 });
 }
 
@@ -254,9 +252,17 @@ p.y < rect.bottom+100;
 
 ctx.beginPath();
 ctx.arc(p.x,p.y, near ? p.r*2 : p.r ,0,Math.PI*2);
-ctx.fillStyle = near ?
-"rgba(255,255,255,0.9)" :
-"rgba(255,182,230,0.4)";
+
+if(p.color==="blue"){
+ctx.fillStyle = near
+? "rgba(121,203,216,0.9)"
+: "rgba(121,203,216,0.4)";
+}else{
+ctx.fillStyle = near
+? "rgba(242,179,198,0.9)"
+: "rgba(242,179,198,0.4)";
+}
+
 ctx.fill();
 
 p.x+=p.dx;
