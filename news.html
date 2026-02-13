@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>🩵🩷璀璨之路🩷🩵</title>
+<title>🩵🩷6璀璨之路🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -212,7 +212,6 @@ footer{
 <footer>© 2026 LUMU</footer>
 
 <script>
-
 const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -227,62 +226,74 @@ const title = document.getElementById("mainTitle");
 
 let particles=[];
 
-// 生成小粒子
-for(let i=0;i<120;i++){
+// 初始化主粒子
+for(let i=0;i<60;i++){
   particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
-    baseR:Math.random()*0.8+0.6,  // 更小
+    r:Math.random()*2+1.5,  // 稍大
     speedY:Math.random()*0.05+0.02,
     driftX:(Math.random()-0.5)*0.02,
-    phase:Math.random()*Math.PI*2,
-    color:Math.random()>0.5?"blue":"pink"
+    color:Math.random()>0.5?"rgba(121,203,216,0.4)":"rgba(242,179,198,0.4)"
   });
 }
+
+// 点击爆炸粒子
+let clickParticles=[];
+
+canvas.addEventListener("click",(e)=>{
+  const cx=e.clientX;
+  const cy=e.clientY;
+  for(let i=0;i<20;i++){
+    const angle=Math.random()*Math.PI*2;
+    const speed=Math.random()*2+1;
+    clickParticles.push({
+      x:cx,
+      y:cy,
+      r:Math.random()*2+1.5,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      alpha:1,
+      color:Math.random()>0.5?"rgba(121,203,216,0.6)":"rgba(242,179,198,0.6)"
+    });
+  }
+});
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   const rect = title.getBoundingClientRect();
 
+  // 主粒子
   particles.forEach(p=>{
-    p.phase+=0.008;
-    let breath = Math.sin(p.phase)*0.05+0.95;
-    let r = p.baseR * breath;
-
     p.y -= p.speedY;
     p.x += p.driftX;
-
-    if(p.y < -5){
-      p.y = canvas.height + 5;
-      p.x = Math.random()*canvas.width;
-    }
-
-    let near =
-      p.x > rect.left-100 &&
-      p.x < rect.right+100 &&
-      p.y > rect.top-100 &&
-      p.y < rect.bottom+100;
-
-    let glowStrength = near ? 1 : 0.6;  // 更透明
-
-    // 🌸 渐变粒子：中心蓝粉→外围白色
-    const gradient = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*4);
-
-    if(p.color==="blue"){
-      gradient.addColorStop(0,"rgba(121,203,216,"+(0.3*glowStrength)+")");
-      gradient.addColorStop(0.5,"rgba(255,255,255,"+(0.15*glowStrength)+")");
-      gradient.addColorStop(1,"rgba(255,255,255,0)");
-    }else{
-      gradient.addColorStop(0,"rgba(242,179,198,"+(0.3*glowStrength)+")");
-      gradient.addColorStop(0.5,"rgba(255,255,255,"+(0.15*glowStrength)+")");
-      gradient.addColorStop(1,"rgba(255,255,255,0)");
-    }
+    if(p.y<-5) p.y=canvas.height+5;
+    if(p.x<-5) p.x=canvas.width+5;
+    if(p.x>canvas.width+5) p.x=-5;
 
     ctx.beginPath();
-    ctx.arc(p.x,p.y,r*4,0,Math.PI*2);
-    ctx.fillStyle=gradient;
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color;
+    ctx.shadowColor=p.color;
+    ctx.shadowBlur=6;
     ctx.fill();
+  });
+
+  // 点击粒子
+  clickParticles.forEach((p,i)=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.alpha-=0.02;
+    if(p.alpha<=0) clickParticles.splice(i,1);
+    else{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color.replace(/[\d\.]+\)$/,""+p.alpha+")");
+      ctx.shadowColor=p.color;
+      ctx.shadowBlur=8;
+      ctx.fill();
+    }
   });
 
   requestAnimationFrame(draw);
