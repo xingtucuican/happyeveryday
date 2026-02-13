@@ -284,28 +284,31 @@ function draw(){
 
     let glowBoost = near ? 1 : 0.8;
 
-    // 🌫 银河雾感光晕
-    const gradient = ctx.createRadialGradient(
-      p.x,p.y,0,
-      p.x,p.y,r*6   // 光晕更远更柔
-    );
+   // 🌫 更轻薄银河粒子
 
-    if(p.color==="blue"){
-  gradient.addColorStop(0,"rgba(121,203,216,0.5)");     // 蓝色中心
-  gradient.addColorStop(0.25,"rgba(255,255,255,0.25)"); // 白色光晕开始
-  gradient.addColorStop(0.6,"rgba(255,255,255,0.12)");
+let r = p.baseR * breath * 0.7;   // 🌸 再缩小一点
+
+const gradient = ctx.createRadialGradient(
+  p.x,p.y,0,
+  p.x,p.y,r*5   // 光晕稍远但很淡
+);
+
+if(p.color==="blue"){
+  gradient.addColorStop(0,"rgba(121,203,216,0.35)");   // 中心更透明
+  gradient.addColorStop(0.3,"rgba(255,255,255,0.18)"); // 白色光晕
+  gradient.addColorStop(0.7,"rgba(255,255,255,0.08)");
   gradient.addColorStop(1,"rgba(255,255,255,0)");
 }else{
-  gradient.addColorStop(0,"rgba(242,179,198,0.5)");     // 粉色中心
-  gradient.addColorStop(0.25,"rgba(255,255,255,0.25)");
-  gradient.addColorStop(0.6,"rgba(255,255,255,0.12)");
+  gradient.addColorStop(0,"rgba(242,179,198,0.35)");
+  gradient.addColorStop(0.3,"rgba(255,255,255,0.18)");
+  gradient.addColorStop(0.7,"rgba(255,255,255,0.08)");
   gradient.addColorStop(1,"rgba(255,255,255,0)");
 }
 
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,r*6,0,Math.PI*2);
-    ctx.fillStyle=gradient;
-    ctx.fill();
+ctx.beginPath();
+ctx.arc(p.x,p.y,r*5,0,Math.PI*2);
+ctx.fillStyle=gradient;
+ctx.fill();
 
   });
 
