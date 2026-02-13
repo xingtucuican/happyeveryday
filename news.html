@@ -217,8 +217,8 @@ const canvas = document.getElementById("particleCanvas");
 const ctx = canvas.getContext("2d");
 
 function resize(){
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 resize();
 window.addEventListener("resize", resize);
@@ -228,51 +228,62 @@ const title = document.getElementById("mainTitle");
 let particles=[];
 
 for(let i=0;i<80;i++){
-particles.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*3+1,
-dx:(Math.random()-0.5)*0.5,
-dy:(Math.random()-0.5)*0.5,
-color: Math.random()>0.5 ? "blue" : "pink"
-});
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*4+3,
+    dx:(Math.random()-0.5)*0.4,
+    dy:(Math.random()-0.5)*0.4,
+    color: Math.random()>0.5 ? "blue" : "pink"
+  });
 }
 
 function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-const rect = title.getBoundingClientRect();
+  const rect = title.getBoundingClientRect();
 
-particles.forEach(p=>{
-let near =
-p.x > rect.left-100 &&
-p.x < rect.right+100 &&
-p.y > rect.top-100 &&
-p.y < rect.bottom+100;
+  particles.forEach(p=>{
 
-ctx.beginPath();
-ctx.arc(p.x,p.y, near ? p.r*2 : p.r ,0,Math.PI*2);
+    let near =
+      p.x > rect.left-120 &&
+      p.x < rect.right+120 &&
+      p.y > rect.top-120 &&
+      p.y < rect.bottom+120;
 
-if(p.color==="blue"){
-ctx.fillStyle = near
-? "rgba(121,203,216,0.9)"
-: "rgba(121,203,216,0.4)";
-}else{
-ctx.fillStyle = near
-? "rgba(242,179,198,0.9)"
-: "rgba(242,179,198,0.4)";
-}
+    let radius = near ? p.r*1.8 : p.r;
 
-ctx.fill();
+    // 🌸 只做边缘发光（空心光环）
+    const gradient = ctx.createRadialGradient(
+      p.x, p.y, radius*0.6,  // 内圈透明
+      p.x, p.y, radius      // 外圈发光
+    );
 
-p.x+=p.dx;
-p.y+=p.dy;
+    if(p.color==="blue"){
+      gradient.addColorStop(0, "rgba(121,203,216,0)");
+      gradient.addColorStop(1, near
+        ? "rgba(121,203,216,0.8)"
+        : "rgba(121,203,216,0.4)");
+    }else{
+      gradient.addColorStop(0, "rgba(242,179,198,0)");
+      gradient.addColorStop(1, near
+        ? "rgba(242,179,198,0.8)"
+        : "rgba(242,179,198,0.4)");
+    }
 
-if(p.x<0||p.x>canvas.width)p.dx*=-1;
-if(p.y<0||p.y>canvas.height)p.dy*=-1;
-});
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,radius,0,Math.PI*2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
 
-requestAnimationFrame(draw);
+    p.x+=p.dx;
+    p.y+=p.dy;
+
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+  });
+
+  requestAnimationFrame(draw);
 }
 draw();
 
