@@ -291,14 +291,16 @@ function draw(){
     );
 
     if(p.color==="blue"){
-      gradient.addColorStop(0,"rgba(121,203,216,"+(0.45*glowBoost)+")");
-      gradient.addColorStop(0.4,"rgba(121,203,216,"+(0.25*p.layer)+")");
-      gradient.addColorStop(1,"rgba(121,203,216,0)");
-    }else{
-      gradient.addColorStop(0,"rgba(242,179,198,"+(0.45*glowBoost)+")");
-      gradient.addColorStop(0.4,"rgba(242,179,198,"+(0.25*p.layer)+")");
-      gradient.addColorStop(1,"rgba(242,179,198,0)");
-    }
+  gradient.addColorStop(0,"rgba(121,203,216,0.5)");     // 蓝色中心
+  gradient.addColorStop(0.25,"rgba(255,255,255,0.25)"); // 白色光晕开始
+  gradient.addColorStop(0.6,"rgba(255,255,255,0.12)");
+  gradient.addColorStop(1,"rgba(255,255,255,0)");
+}else{
+  gradient.addColorStop(0,"rgba(242,179,198,0.5)");     // 粉色中心
+  gradient.addColorStop(0.25,"rgba(255,255,255,0.25)");
+  gradient.addColorStop(0.6,"rgba(255,255,255,0.12)");
+  gradient.addColorStop(1,"rgba(255,255,255,0)");
+}
 
     ctx.beginPath();
     ctx.arc(p.x,p.y,r*6,0,Math.PI*2);
