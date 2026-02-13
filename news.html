@@ -227,67 +227,81 @@ const title = document.getElementById("mainTitle");
 
 let particles=[];
 
-for(let i=0;i<100;i++){
+// 🌌 分层粒子
+for(let i=0;i<120;i++){
+
+  let layer = Math.random(); // 0-1 远近层
+
   particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
-    baseR:Math.random()*1.2+1.2,   // 稍微大一些
-    speedY:Math.random()*0.05+0.02,  // 更慢
-    driftX:(Math.random()-0.5)*0.03, // 几乎不横移
+
+    // 🌸 分层大小
+    baseR: layer<0.6
+      ? Math.random()*0.8+0.9   // 远景小粒子
+      : Math.random()*1.4+1.4,  // 前景稍大
+
+    speedY: layer<0.6
+      ? Math.random()*0.03+0.01
+      : Math.random()*0.05+0.02,
+
+    driftX:(Math.random()-0.5)*0.02,
+
     phase:Math.random()*Math.PI*2,
+    layer:layer,
     color:Math.random()>0.5?"blue":"pink"
   });
 }
 
 function draw(){
 
-  ctx.clearRect(0,0,canvas.width,canvas.height); // 完全清空，不拖尾
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
   const rect = title.getBoundingClientRect();
 
   particles.forEach(p=>{
 
-    // 极轻微呼吸
-    p.phase+=0.008;
-    let breath = Math.sin(p.phase)*0.05+0.95;
+    // 🌫 极轻微呼吸
+    p.phase+=0.006;
+    let breath = Math.sin(p.phase)*0.04+0.96;
     let r = p.baseR * breath;
 
-    // 极慢上升
+    // 🌌 缓慢上升
     p.y -= p.speedY;
     p.x += p.driftX;
 
-    if(p.y < -5){
-      p.y = canvas.height + 5;
+    if(p.y < -10){
+      p.y = canvas.height + 10;
       p.x = Math.random()*canvas.width;
     }
 
-    // 判断靠近标题
+    // 靠近标题略增强
     let near =
-      p.x > rect.left-100 &&
-      p.x < rect.right+100 &&
-      p.y > rect.top-100 &&
-      p.y < rect.bottom+100;
+      p.x > rect.left-120 &&
+      p.x < rect.right+120 &&
+      p.y > rect.top-120 &&
+      p.y < rect.bottom+120;
 
-    let glowStrength = near ? 1 : 0.7;
+    let glowBoost = near ? 1 : 0.8;
 
-    // 🌸 外层发光
+    // 🌫 银河雾感光晕
     const gradient = ctx.createRadialGradient(
       p.x,p.y,0,
-      p.x,p.y,r*4
+      p.x,p.y,r*6   // 光晕更远更柔
     );
 
-   if(p.color==="blue"){
-  gradient.addColorStop(0,"rgba(121,203,216,0.55)");   // 中心更透明
-  gradient.addColorStop(0.35,"rgba(121,203,216,"+(glowStrength*0.4)+")");
-  gradient.addColorStop(1,"rgba(121,203,216,0)");
-}else{
-  gradient.addColorStop(0,"rgba(242,179,198,0.55)");
-  gradient.addColorStop(0.35,"rgba(242,179,198,"+(glowStrength*0.4)+")");
-  gradient.addColorStop(1,"rgba(242,179,198,0)");
-}
+    if(p.color==="blue"){
+      gradient.addColorStop(0,"rgba(121,203,216,"+(0.45*glowBoost)+")");
+      gradient.addColorStop(0.4,"rgba(121,203,216,"+(0.25*p.layer)+")");
+      gradient.addColorStop(1,"rgba(121,203,216,0)");
+    }else{
+      gradient.addColorStop(0,"rgba(242,179,198,"+(0.45*glowBoost)+")");
+      gradient.addColorStop(0.4,"rgba(242,179,198,"+(0.25*p.layer)+")");
+      gradient.addColorStop(1,"rgba(242,179,198,0)");
+    }
 
     ctx.beginPath();
-    ctx.arc(p.x,p.y,r*4,0,Math.PI*2);
+    ctx.arc(p.x,p.y,r*6,0,Math.PI*2);
     ctx.fillStyle=gradient;
     ctx.fill();
 
