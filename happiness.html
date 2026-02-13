@@ -13,6 +13,7 @@ background:linear-gradient(135deg,#89f7fe,#66a6ff,#ff9ad5);
 overflow:hidden;
 }
 
+/* 粒子层 */
 #particles{
 position:fixed;
 width:100%;
@@ -20,6 +21,7 @@ height:100%;
 z-index:0;
 }
 
+/* 主布局 */
 .layout{
 position:relative;
 z-index:2;
@@ -27,31 +29,66 @@ display:flex;
 height:100vh;
 }
 
+/* 左侧导航 */
 .sidebar{
-width:250px;
+width:240px;
 padding:20px;
 background:rgba(255,255,255,0.15);
-backdrop-filter:blur(15px);
+backdrop-filter:blur(12px);
+border-radius:20px;
+margin:20px;
 overflow-y:auto;
+color:white;
+font-size:14px;
 }
 
+.sidebar div{
+margin:6px 0;
+padding:6px 10px;
+border-radius:12px;
+cursor:pointer;
+transition:all 0.3s;
+}
+
+.sidebar div:hover{
+background:rgba(255,255,255,0.25);
+transform:translateX(4px);
+}
+
+/* 右侧留言区域 */
 .main{
 flex:1;
 padding:30px;
 overflow-y:auto;
 }
 
+/* 留言卡片 */
 .card{
 background:rgba(255,255,255,0.25);
+backdrop-filter:blur(15px);
 padding:20px;
 border-radius:20px;
 margin-bottom:20px;
-backdrop-filter:blur(20px);
+color:white;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
+transition:all 0.3s;
+}
+
+.card:hover{
+transform:translateY(-4px);
+box-shadow:0 15px 35px rgba(0,0,0,0.2);
 }
 
 .nickname{
-color:#ff7edb;
+color:#ffb6e6;
 font-weight:bold;
+margin-bottom:8px;
+}
+
+.date{
+opacity:0.8;
+font-size:13px;
+margin-bottom:6px;
 }
 
 </style>
@@ -74,11 +111,17 @@ font-weight:bold;
 </div>
 
 <script>
-/* 粒子 */
+
+/* 粒子背景 */
 const canvas=document.getElementById("particles")
 const ctx=canvas.getContext("2d")
+
+function resizeCanvas(){
 canvas.width=window.innerWidth
 canvas.height=window.innerHeight
+}
+resizeCanvas()
+window.addEventListener("resize",resizeCanvas)
 
 let particles=[]
 for(let i=0;i<80;i++){
@@ -86,8 +129,8 @@ particles.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 r:Math.random()*3+1,
-dx:(Math.random()-0.5)*0.5,
-dy:(Math.random()-0.5)*0.5
+dx:(Math.random()-0.5)*0.4,
+dy:(Math.random()-0.5)*0.4
 })
 }
 
@@ -107,10 +150,10 @@ requestAnimationFrame(draw)
 }
 draw()
 
-/* 读取本地 diary.json */
+/* 读取 diary.json */
 async function loadDiary(){
 try{
-const res=await fetch("diary.json")
+const res=await fetch("diary.json?"+Date.now())
 const data=await res.json()
 render(data)
 }catch(e){
@@ -142,11 +185,11 @@ for(const y in grouped){
 const yDiv=document.createElement("div")
 yDiv.innerHTML="▶ "+y
 yDiv.style.fontWeight="bold"
-yDiv.style.cursor="pointer"
 index.appendChild(yDiv)
 
 const yearBlock=document.createElement("div")
 yearBlock.style.display="none"
+yearBlock.style.marginLeft="10px"
 index.appendChild(yearBlock)
 
 yDiv.onclick=()=>{
@@ -157,12 +200,12 @@ yearBlock.style.display==="none"?"block":"none"
 for(const m in grouped[y]){
 
 const mDiv=document.createElement("div")
-mDiv.innerHTML="　▶ "+m
-mDiv.style.cursor="pointer"
+mDiv.innerHTML="▶ "+m
 yearBlock.appendChild(mDiv)
 
 const monthBlock=document.createElement("div")
 monthBlock.style.display="none"
+monthBlock.style.marginLeft="10px"
 yearBlock.appendChild(monthBlock)
 
 mDiv.onclick=()=>{
@@ -173,21 +216,13 @@ monthBlock.style.display==="none"?"block":"none"
 for(const d in grouped[y][m]){
 
 const dDiv=document.createElement("div")
-dDiv.innerHTML="　　"+d
-dDiv.style.cursor="pointer"
+dDiv.innerHTML=d
 monthBlock.appendChild(dDiv)
 
 dDiv.onclick=()=>{
 container.innerHTML=""
 grouped[y][m][d].forEach(item=>{
-const card=document.createElement("div")
-card.className="card"
-card.innerHTML=`
-<div class="nickname">${item.nickname}</div>
-<div>${item.date}</div>
-<div>${item.content}</div>
-`
-container.appendChild(card)
+createCard(container,item)
 })
 }
 }
@@ -201,18 +236,26 @@ function renderAll(data){
 const container=document.getElementById("commentsContainer")
 container.innerHTML=""
 data.forEach(item=>{
+createCard(container,item)
+})
+}
+
+function createCard(container,item){
 const card=document.createElement("div")
 card.className="card"
 card.innerHTML=`
 <div class="nickname">${item.nickname}</div>
-<div>${item.date}</div>
+<div class="date">${item.date}</div>
 <div>${item.content}</div>
 `
 container.appendChild(card)
-})
 }
 
+/* 自动刷新（30秒） */
+setInterval(loadDiary,30000)
+
 loadDiary()
+
 </script>
 
 </body>
