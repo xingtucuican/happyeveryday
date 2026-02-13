@@ -2,15 +2,10 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>🩵🩷 3幸福时刻 🩷🩵</title>
+<title>🩵🩷 幸福时刻 🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-@font-face {
-  font-family:"Smiley Sans";
-  src:url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Regular.otf") format("opentype");
-}
-
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
 
@@ -18,25 +13,21 @@ html,body{height:100%;}
 body{
   font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 25%,#b7dbe3 50%,#e4cddc 75%,#f2b3c6 100%);
-  overflow:hidden;
   display:flex;
-  flex-direction:column;
+  overflow:hidden;
 }
 
 /* 粒子 */
 #particles{
-  position:fixed;
-  top:0; left:0; width:100%; height:100%;
+  position:fixed; top:0; left:0; width:100%; height:100%;
   pointer-events:none; z-index:0;
 }
-
 .particle{
   position:absolute;
   border-radius:50%;
   opacity:0.4;
   animation:float linear infinite;
 }
-
 @keyframes float{
   from{transform:translateY(100vh) scale(1);}
   to{transform:translateY(-10vh) scale(1.2);}
@@ -44,21 +35,15 @@ body{
 
 /* 主体布局 */
 .wrapper{
-  display:flex;
-  flex:1;
-  position:relative;
-  z-index:1;
-  min-height:100vh;
+  display:flex; flex:1; min-height:100vh; z-index:1; position:relative;
 }
 
 /* 左侧日期索引 */
 .sidebar{
   width:260px;
-  background:transparent;
   padding:20px;
   overflow-y:auto;
 }
-
 .sidebar h2{color:#fff;margin-bottom:20px;font-size:18px;}
 .year, .month, .day{
   background:rgba(255,255,255,0.9);
@@ -79,7 +64,6 @@ body{
   display:flex;
   flex-direction:column;
 }
-
 .section{
   background:rgba(255,255,255,0.9);
   padding:20px 25px;
@@ -91,20 +75,18 @@ body{
 .section h3{margin-bottom:10px;}
 .section p{font-size:14px;line-height:1.8;color:#555;}
 .section small{display:block;margin-top:6px;color:#4ab7cc;font-weight:600;}
-
 .back{margin-bottom:20px;color:#fff;font-weight:bold;text-decoration:none;}
 .back:hover{opacity:.8;}
 
-/* 手机适配 */
 @media(max-width:768px){
   .wrapper{flex-direction:column;}
   .sidebar{width:100%;height:auto;}
-  .main{margin-left:0;}
 }
 </style>
 </head>
 
 <body>
+
 <div id="particles"></div>
 
 <div class="wrapper">
@@ -126,8 +108,7 @@ for(let i=0;i<50;i++){
   const p=document.createElement("div");
   p.className="particle";
   const size=Math.random()*6+3;
-  p.style.width=size+"px";
-  p.style.height=size+"px";
+  p.style.width=size+"px"; p.style.height=size+"px";
   p.style.left=Math.random()*100+"%";
   p.style.background=Math.random()>0.5?"#ffffff":"#ffd1ec";
   p.style.animationDuration=(Math.random()*15+10)+"s";
@@ -135,29 +116,34 @@ for(let i=0;i<50;i++){
   particleContainer.appendChild(p);
 }
 
-/* 🌸 加载 diary.json 并生成树状索引 */
-fetch('diary.json')
-.then(res=>res.json())
-.then(data=>{
-  const treeDiv=document.getElementById("tree");
-  const postsDiv=document.getElementById("posts");
-  
-  // 按日期排序倒序
-  data.sort((a,b)=> new Date(b.date)-new Date(a.date));
+/* 🌸 Cusdis API 获取留言 */
+const APP_ID = "6bd954b7-e2b4-4206-a1c3-3072cecfc326";
+const PAGE_ID = "global-board"; 
+const postsDiv = document.getElementById("posts");
+const treeDiv = document.getElementById("tree");
 
-  // 构建树状对象
-  const tree={};
-  data.forEach(item=>{
-    const [y,m,d]=item.date.split('-');
+async function loadComments(){
+  const res = await fetch(`https://cusdis.com/api/open/comments?appId=${APP_ID}&page=1`);
+  const data = await res.json();
+  const comments = data.data;
+
+  // 按日期分类
+  const tree = {};
+  comments.forEach(c=>{
+    const date = new Date(c.createdAt);
+    const y=date.getFullYear();
+    const m=String(date.getMonth()+1).padStart(2,'0');
+    const d=String(date.getDate()).padStart(2,'0');
     if(!tree[y]) tree[y]={};
     if(!tree[y][m]) tree[y][m]={};
     if(!tree[y][m][d]) tree[y][m][d]=[];
-    tree[y][m][d].push(item);
+    tree[y][m][d].push({nickname:c.nickname, content:c.content, date:`${y}-${m}-${d}`});
   });
 
   // 渲染树状索引
-  Object.keys(tree).sort().reverse().forEach(y=>{
-    const yearDiv=document.createElement("div");
+  const sortedYears = Object.keys(tree).sort().reverse();
+  sortedYears.forEach(y=>{
+    const yearDiv = document.createElement("div");
     yearDiv.className="year"; yearDiv.textContent=y;
     const monthWrap=document.createElement("div");
 
@@ -188,30 +174,29 @@ fetch('diary.json')
     treeDiv.appendChild(monthWrap);
   });
 
+  // 显示某天留言
   function showPosts(y,m,d){
     postsDiv.innerHTML="";
     tree[y][m][d].forEach(item=>{
       postsDiv.innerHTML+=`
         <div class="section">
           <h3>${item.date}</h3>
-          <p>${item.content || "今天还没有留言🌸"}</p >
-          <small>${item.nickname || ""}</small>
+          <p>${item.content}</p >
+          <small>${item.nickname}</small>
         </div>
       `;
     });
   }
 
   // 默认显示最近一天
-  const latestY=Object.keys(tree).sort().reverse()[0];
-  const latestM=Object.keys(tree[latestY]).sort().reverse()[0];
-  const latestD=Object.keys(tree[latestY][latestM]).sort().reverse()[0];
+  const latestY = sortedYears[0];
+  const latestM = Object.keys(tree[latestY]).sort().reverse()[0];
+  const latestD = Object.keys(tree[latestY][latestM]).sort().reverse()[0];
   showPosts(latestY,latestM,latestD);
+}
 
-});
+loadComments();
 </script>
 
-<footer style="text-align:center;font-size:12px;color:#eee;margin:30px 0;">
-© 2026 LUMU
-</footer>
 </body>
 </html>
