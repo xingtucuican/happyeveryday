@@ -9,30 +9,38 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Fetch and Convert
+      - name: Fetch Cusdis Data
         run: |
           curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100" > raw.json
 
+      - name: Convert to diary.json
+        run: |
           echo "[" > diary.json
-          cat raw.json | grep -o '{.*}' | while read line; do
+
+          cat raw.json | grep -o '{[^}]*}' | while read line; do
             nickname=$(echo $line | sed -n 's/.*"nickname":"\([^"]*\)".*/\1/p')
             content=$(echo $line | sed -n 's/.*"content":"\([^"]*\)".*/\1/p')
             date=$(echo $line | sed -n 's/.*"createdAt":"\([^T]*\)T.*/\1/p')
 
-            echo "{\"nickname\":\"$nickname\",\"content\":\"$content\",\"date\":\"$date\"}," >> diary.json
+            if [ ! -z "$nickname" ]; then
+              echo "{\"nickname\":\"$nickname\",\"content\":\"$content\",\"date\":\"$date\"}," >> diary.json
+            fi
           done
 
           sed -i '$ s/,$//' diary.json
           echo "]" >> diary.json
 
-      - name: Commit
+      - name: Commit and Push
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add diary.json
-          git commit -m "update diary"
-  
+          git commit -m "update diary" || echo "No changes"
+          git push
