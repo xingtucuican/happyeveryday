@@ -2,7 +2,7 @@ name: Fetch Cusdis Comments
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -19,17 +19,15 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Fetch Latest Comments
+      - name: Fetch and Convert
         run: |
-          curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100&orderBy=createdAt&order=desc" > raw.json
+          curl "https://cusdis.com/api/open/comments?appId=你的AppID&page=1&pageSize=100" > raw.json
 
-          jq '.data.data 
-          | map(select(.page.slug=="happiness")) 
-          | map({
-              nickname: .by_nickname,
-              content: .content,
-              date: (.createdAt | split("T")[0])
-            })' raw.json > diary.json
+          jq '.data.data | map({
+            nickname: .by_nickname,
+            content: .content,
+            date: (.createdAt | split("T")[0])
+          })' raw.json > diary.json
 
       - name: Commit
         run: |
