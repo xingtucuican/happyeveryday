@@ -21,7 +21,7 @@ jobs:
 
       - name: Fetch and Convert
         run: |
-          curl "https://cusdis.com/api/open/comments?appId=你的AppID&page=1&pageSize=100" > raw.json
+          curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100" > raw.json
 
           jq '.data.data | map({
             nickname: .by_nickname,
