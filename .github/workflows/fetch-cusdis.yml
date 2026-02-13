@@ -13,17 +13,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Fetch Cusdis Data
+      - name: Fetch and Convert
         run: |
-          curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100" -o raw.json
+          curl "https://cusdis.com/api/open/comments?appId=6bd954b7-e2b4-4206-a1c3-3072cecfc326&page=1&pageSize=100" > raw.json
 
-      - name: Convert to diary.json
-        run: |
-          jq '[.data[] | {
-            nickname: .nickname,
-            content: .content,
-            date: (.createdAt | split("T")[0])
-          }]' raw.json > diary.json
+          echo "[" > diary.json
+          cat raw.json | grep -o '{.*}' | while read line; do
+            nickname=$(echo $line | sed -n 's/.*"nickname":"\([^"]*\)".*/\1/p')
+            content=$(echo $line | sed -n 's/.*"content":"\([^"]*\)".*/\1/p')
+            date=$(echo $line | sed -n 's/.*"createdAt":"\([^T]*\)T.*/\1/p')
+
+            echo "{\"nickname\":\"$nickname\",\"content\":\"$content\",\"date\":\"$date\"}," >> diary.json
+          done
+
+          sed -i '$ s/,$//' diary.json
+          echo "]" >> diary.json
 
       - name: Commit
         run: |
@@ -31,4 +35,4 @@ jobs:
           git config user.email "actions@github.com"
           git add diary.json
           git commit -m "update diary"
-    
+  
