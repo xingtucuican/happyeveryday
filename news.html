@@ -2,344 +2,259 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>璀璨之路</title>
+<title>🩵🩷璀璨之路🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+@font-face {
+  font-family: "Smiley Sans";
+  src: url("https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans@latest/SmileySans-Regular.otf")
+       format("opentype");
+}
+
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-min-height:100vh;
-overflow-x:hidden;
-background:linear-gradient(
-135deg,
-#4ab7cc 0%,
-#79cbd8 25%,
-#b7dbe3 50%,
-#e4cddc 75%,
-#f2b3c6 100%
-);
-background-attachment:fixed;
+  font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+  background:linear-gradient(
+    135deg,
+    #4ab7cc 0%,
+    #79cbd8 25%,
+    #b7dbe3 50%,
+    #e4cddc 75%,
+    #f2b3c6 100%
+  );
+  background-attachment:fixed;
+  padding:100px 20px;
 }
 
-/* 🌸 粒子canvas */
-#particleCanvas{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:0;
-pointer-events:none;
+/* ✨ 粒子层 */
+.particles{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:0;
 }
 
-/* 🌸 主布局 */
-.layout{
-position:relative;
-z-index:1;
-display:flex;
-height:100vh;
+.particle{
+  position:absolute;
+  border-radius:50%;
+  opacity:0.4;
+  animation:float linear infinite;
 }
 
-.sidebar{
-width:240px;
-padding:20px;
-background:rgba(255,255,255,0.18);
-backdrop-filter:blur(12px);
-border-radius:20px;
-margin:20px;
-overflow-y:auto;
-color:white;
-font-size:14px;
+@keyframes float{
+  from{transform:translateY(100vh) scale(1);}
+  to{transform:translateY(-10vh) scale(1.2);}
 }
 
-.sidebar div{
-margin:6px 0;
-padding:6px 10px;
-border-radius:12px;
-cursor:pointer;
-transition:all 0.3s;
+/* 页面主标题 星光金渐变 */
+.page-title{
+  font-family:"Smiley Sans",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  text-align:center;
+  font-size:30px;
+  letter-spacing:3px;
+  margin-bottom:80px;
+  font-weight:700;
+  position:relative;
+  z-index:1;
+  background: linear-gradient(135deg,#FFD700 0%,#FFEC8B 25%,#FFE082 50%,#FFD54F 75%,#FFC107 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.sidebar div:hover{
-background:rgba(255,255,255,0.3);
-transform:translateX(4px);
+/* 时间线 */
+.timeline{
+  position:relative;
+  max-width:1000px;
+  margin:auto;
+  z-index:1;
 }
 
-.main{
-flex:1;
-padding:30px;
-overflow-y:auto;
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:4px;
+  height:100%;
+  background:rgba(255,255,255,0.5);
+  border-radius:10px;
 }
 
-/* 🌸 标题 */
-.glow-title{
-text-align:center;
-font-size:52px;
-font-weight:800;
-margin-bottom:40px;
-letter-spacing:14px;
-position:relative;
+.item{
+  position:relative;
+  width:50%;
+  padding:20px 40px;
+  margin-bottom:60px;
 }
 
-.glow-title span{
-display:inline-block;
-background:linear-gradient(
-90deg,
-#4ab7cc,
-#79cbd8,
-#f2b3c6,
-#ff9ad5,
-#4ab7cc
-);
-background-size:300%;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-animation:
-gradientMove 6s linear infinite,
-glow 3s ease-in-out infinite alternate;
+.item.left{left:0;text-align:right;}
+.item.right{left:50%;}
+
+.item::before{
+  content:"";
+  position:absolute;
+  top:30px;
+  width:18px;
+  height:18px;
+  background:#fff;
+  border:4px solid #f2b3c6;
+  border-radius:50%;
+  z-index:2;
 }
 
-@keyframes gradientMove{
-0%{background-position:0%;}
-100%{background-position:300%;}
-}
+.item.left::before{right:-9px;}
+.item.right::before{left:-9px;}
 
-@keyframes glow{
-from{
-text-shadow:
-0 0 5px rgba(255,255,255,0.6),
-0 0 15px rgba(255,182,230,0.6);
-}
-to{
-text-shadow:
-0 0 20px rgba(255,255,255,0.9),
-0 0 40px rgba(255,182,230,0.9);
-}
-}
-
-/* 🌸 留言卡片 */
 .card{
-background:rgba(255,255,255,0.28);
-backdrop-filter:blur(15px);
-padding:20px;
-border-radius:20px;
-margin-bottom:20px;
-color:white;
-box-shadow:0 8px 25px rgba(0,0,0,0.15);
-transition:all 0.3s;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(12px);
+  border-radius:22px;
+  padding:28px 30px;
+  box-shadow:0 20px 45px rgba(0,0,0,.12);
+  transition:.35s;
 }
 
 .card:hover{
-transform:translateY(-4px);
-box-shadow:0 15px 35px rgba(0,0,0,0.2);
-}
-
-.nickname{
-color:#ffb6e6;
-font-weight:bold;
-margin-bottom:8px;
+  transform:translateY(-8px);
+  box-shadow:0 30px 60px rgba(0,0,0,.2);
 }
 
 .date{
-opacity:0.8;
-font-size:13px;
-margin-bottom:6px;
+  font-size:13px;
+  color:#888;
+  margin-bottom:10px;
+}
+
+/* 标题每个字粉蓝渐变 */
+.title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:10px;
+  display:inline-block;
+}
+.title span{
+  background: linear-gradient(135deg,#f2b3c6 0%,#e4cddc 25%,#b7dbe3 50%,#79cbd8 75%,#4ab7cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display:inline-block;
+}
+
+.content{
+  font-size:14px;
+  line-height:1.9;
+  color:#555;
+}
+
+.back{
+  text-align:center;
+  margin-top:80px;
+  position:relative;
+  z-index:1;
+}
+
+.back a{
+  color:#fff;
+  text-decoration:none;
+  font-size:16px;
+  font-weight:600;
+}
+
+/* 手机 */
+@media(max-width:900px){
+  .timeline::before{left:10px;}
+  .item{
+    width:100%;
+    padding-left:40px;
+    padding-right:20px;
+  }
+  .item.left,.item.right{
+    left:0;
+    text-align:left;
+  }
+  .item::before{left:1px;}
+}
+
+footer{
+  text-align:center;
+  font-size:13px;
+  color:#eee;
+  margin-top:60px;
+  position:relative;
+  z-index:1;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="particleCanvas"></canvas>
+<div class="particles" id="particles"></div>
 
-<div class="layout">
+<div class="page-title">🩵🩷 璀璨之路 🩷🩵</div>
 
-<div class="sidebar" id="dateIndex">加载中...</div>
+<div class="timeline" id="timeline"></div>
 
-<div class="main">
-
-<h1 class="glow-title" id="mainTitle">
-<span>璀</span>
-<span>璨</span>
-<span>之</span>
-<span>路</span>
-</h1>
-
-<div id="commentsContainer"></div>
-
+<div class="back">
+  <a href=" ">← 返回顶部</a >
 </div>
-</div>
+
+<footer>
+© 2026 LUMU
+</footer>
 
 <script>
+/* 🌸 从 news.json 获取新闻 */
+fetch('news.json')
+  .then(res => res.json())
+  .then(newsData => {
+    newsData.sort((a,b)=> new Date(b.date)-new Date(a.date)); // 倒序
+    const timeline = document.getElementById("timeline");
 
-/* 🌸 粒子靠近标题变亮 */
+    newsData.forEach((item,index)=>{
+      const side = index % 2 === 0 ? "right":"left";
+      const div = document.createElement("div");
+      div.className = "item " + side;
 
-const canvas = document.getElementById("particleCanvas");
-const ctx = canvas.getContext("2d");
+      // 每个字独立粉蓝渐变
+      const titleChars = item.title.split('').map(c=>`<span>${c}</span>`).join('');
 
-function resize(){
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+      div.innerHTML = `
+        <div class="card">
+          <div class="date">${item.date}</div>
+          <div class="title">${titleChars}</div>
+          <div class="content">${item.content}</div>
+        </div>
+      `;
+      timeline.appendChild(div);
+    });
+  })
+  .catch(err=>console.error("读取 news.json 失败：", err));
+
+/* 🌸 粒子生成 */
+const particleContainer = document.getElementById("particles");
+
+for(let i=0;i<25;i++){
+  const p = document.createElement("div");
+  p.className="particle";
+
+  const size = Math.random()*8+4;
+  p.style.width=size+"px";
+  p.style.height=size+"px";
+  p.style.left=Math.random()*100+"%";
+  p.style.background = Math.random()>0.5 ? "#ffffff" : "#ffd1ec";
+  p.style.animationDuration = (Math.random()*15+10)+"s";
+  p.style.animationDelay = Math.random()*10+"s";
+
+  particleContainer.appendChild(p);
 }
-resize();
-window.addEventListener("resize", resize);
-
-const title = document.getElementById("mainTitle");
-
-let particles = [];
-
-for(let i=0;i<80;i++){
-particles.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*3+1,
-dx:(Math.random()-0.5)*0.5,
-dy:(Math.random()-0.5)*0.5
-});
-}
-
-function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-const rect = title.getBoundingClientRect();
-
-particles.forEach(p=>{
-
-let near =
-p.x > rect.left-100 &&
-p.x < rect.right+100 &&
-p.y > rect.top-100 &&
-p.y < rect.bottom+100;
-
-ctx.beginPath();
-ctx.arc(p.x,p.y, near ? p.r*2 : p.r ,0,Math.PI*2);
-
-ctx.fillStyle = near ?
-"rgba(255,255,255,0.9)" :
-(Math.random()>0.5 ?
-"rgba(255,255,255,0.4)" :
-"rgba(255,182,230,0.4)");
-
-ctx.fill();
-
-p.x += p.dx;
-p.y += p.dy;
-
-if(p.x<0||p.x>canvas.width)p.dx*=-1;
-if(p.y<0||p.y>canvas.height)p.dy*=-1;
-
-});
-
-requestAnimationFrame(draw);
-}
-
-draw();
-
-/* 🌸 留言系统 */
-
-async function loadDiary(){
-try{
-const res=await fetch("diary.json?"+Date.now())
-const data=await res.json()
-render(data.reverse())
-}catch(e){
-document.getElementById("dateIndex").innerHTML="暂无留言数据"
-}
-}
-
-function render(data){
-const container=document.getElementById("commentsContainer")
-const index=document.getElementById("dateIndex")
-
-container.innerHTML=""
-index.innerHTML=""
-
-const grouped={}
-
-data.forEach(item=>{
-const [year,month,day]=item.date.split("-")
-if(!grouped[year]) grouped[year]={}
-if(!grouped[year][month]) grouped[year][month]={}
-if(!grouped[year][month][day]) grouped[year][month][day]=[]
-grouped[year][month][day].push(item)
-})
-
-for(const y in grouped){
-
-const yDiv=document.createElement("div")
-yDiv.innerHTML="▶ "+y
-yDiv.style.fontWeight="bold"
-index.appendChild(yDiv)
-
-const yearBlock=document.createElement("div")
-yearBlock.style.display="none"
-yearBlock.style.marginLeft="10px"
-index.appendChild(yearBlock)
-
-yDiv.onclick=()=>{
-yearBlock.style.display=
-yearBlock.style.display==="none"?"block":"none"
-}
-
-for(const m in grouped[y]){
-
-const mDiv=document.createElement("div")
-mDiv.innerHTML="▶ "+m
-yearBlock.appendChild(mDiv)
-
-const monthBlock=document.createElement("div")
-monthBlock.style.display="none"
-monthBlock.style.marginLeft="10px"
-yearBlock.appendChild(monthBlock)
-
-mDiv.onclick=()=>{
-monthBlock.style.display=
-monthBlock.style.display==="none"?"block":"none"
-}
-
-for(const d in grouped[y][m]){
-
-const dDiv=document.createElement("div")
-dDiv.innerHTML=d
-monthBlock.appendChild(dDiv)
-
-dDiv.onclick=()=>{
-container.innerHTML=""
-grouped[y][m][d].forEach(item=>{
-createCard(container,item)
-})
-}
-}
-}
-}
-
-renderAll(data)
-}
-
-function renderAll(data){
-const container=document.getElementById("commentsContainer")
-container.innerHTML=""
-data.forEach(item=>{
-createCard(container,item)
-})
-}
-
-function createCard(container,item){
-const card=document.createElement("div")
-card.className="card"
-card.innerHTML=`
-<div class="nickname">${item.nickname}</div>
-<div class="date">${item.date}</div>
-<div>${item.content}</div>
-`
-container.appendChild(card)
-}
-
-setInterval(loadDiary,30000)
-loadDiary()
-
 </script>
 
 </body>
