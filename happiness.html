@@ -1,212 +1,152 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<title>🩵🩷 幸福时刻 🩷🩵</title>
+<meta charset="UTF-8">
+<title>幸福时刻</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box;}
-
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  background:linear-gradient(135deg,#4ab7cc 0%,#f2b3c6 100%);
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont;
+background:linear-gradient(135deg,#89f7fe,#66a6ff,#ff9ad5);
+overflow:hidden;
 }
 
-.wrapper{
-  display:flex;
-  height:100vh;
+#particles{
+position:fixed;
+width:100%;
+height:100%;
+z-index:0;
+}
+
+.layout{
+position:relative;
+z-index:2;
+display:flex;
+height:100vh;
 }
 
 .sidebar{
-  width:260px;
-  background:#fff;
-  padding:20px;
-  overflow-y:auto;
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  box-shadow:3px 0 15px rgba(0,0,0,.08);
+width:250px;
+padding:20px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(15px);
+overflow-y:auto;
 }
 
 .main{
-  margin-left:260px;
-  flex:1;
-  overflow-y:auto;
-  padding:40px;
+flex:1;
+padding:30px;
+overflow-y:auto;
 }
 
-.year{
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
+.card{
+background:rgba(255,255,255,0.25);
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+backdrop-filter:blur(20px);
 }
 
-.month{
-  margin-left:15px;
-  display:none;
-  cursor:pointer;
-  color:#666;
+.nickname{
+color:#ff7edb;
+font-weight:bold;
 }
 
-.day{
-  margin-left:30px;
-  font-size:14px;
-  cursor:pointer;
-  display:none;
-}
-
-.section{
-  background:#fff;
-  padding:30px;
-  border-radius:20px;
-  margin-bottom:40px;
-  box-shadow:0 12px 35px rgba(0,0,0,.1);
-}
-
-.back{
-  display:inline-block;
-  margin-bottom:20px;
-  text-decoration:none;
-  color:#ff8fa3;
-  font-weight:bold;
-}
-
-.back:hover{opacity:.7;}
-
-@media(max-width:768px){
-  .sidebar{position:relative;width:100%;height:auto;}
-  .main{margin-left:0;}
-  .wrapper{flex-direction:column;}
-}
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
+<canvas id="particles"></canvas>
 
-  <div class="sidebar">
-    <h2>🩵 日期索引 🩷</h2>
-    <div id="tree"></div>
-  </div>
+<div class="layout">
 
-  <div class="main">
-    <a href=" " class="back">← 返回首页</a >
-    <div id="posts"></div>
+<div class="sidebar" id="dateIndex">
+加载中...
+</div>
 
-    <!-- 留言系统 -->
-    <div id="cusdis_thread"
-      data-host="https://cusdis.com"
-      data-app-id="6bd954b7-e2b4-4206-a1c3-3072cecfc326"
-      data-page-id="global-board"
-      data-page-title="璀璨之路">
-    </div>
-  </div>
+<div class="main">
+<div id="commentsContainer"></div>
+</div>
 
 </div>
 
-<script src="https://cusdis.com/js/cusdis.es.js"></script>
-
 <script>
-const APP_ID = "6bd954b7-e2b4-4206-a1c3-3072cecfc326";
+/* 粒子 */
+const canvas=document.getElementById("particles")
+const ctx=canvas.getContext("2d")
+canvas.width=window.innerWidth
+canvas.height=window.innerHeight
 
-fetch(`https://cusdis.com/api/open/comments?appId=${APP_ID}&page=1`)
-  .then(res=>res.json())
-  .then(data=>{
+let particles=[]
+for(let i=0;i<80;i++){
+particles.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*3+1,
+dx:(Math.random()-0.5)*0.5,
+dy:(Math.random()-0.5)*0.5
+})
+}
 
-    const comments = data.data;
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height)
+particles.forEach(p=>{
+ctx.beginPath()
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+ctx.fillStyle="rgba(255,255,255,0.6)"
+ctx.fill()
+p.x+=p.dx
+p.y+=p.dy
+if(p.x<0||p.x>canvas.width)p.dx*=-1
+if(p.y<0||p.y>canvas.height)p.dy*=-1
+})
+requestAnimationFrame(draw)
+}
+draw()
 
-    const tree = {};
-    const postsDiv = document.getElementById("posts");
-    const treeDiv = document.getElementById("tree");
+/* 读取本地 diary.json */
+async function loadDiary(){
+try{
+const res=await fetch("diary.json")
+const data=await res.json()
+render(data)
+}catch(e){
+document.getElementById("dateIndex").innerHTML="暂无留言数据"
+}
+}
 
-    comments.forEach(c=>{
-      const date = new Date(c.createdAt);
-      const y = date.getFullYear();
-      const m = String(date.getMonth()+1).padStart(2,"0");
-      const d = String(date.getDate()).padStart(2,"0");
+function render(data){
+const container=document.getElementById("commentsContainer")
+const index=document.getElementById("dateIndex")
 
-      if(!tree[y]) tree[y]={};
-      if(!tree[y][m]) tree[y][m]={};
-      if(!tree[y][m][d]) tree[y][m][d]=[];
+container.innerHTML=""
+index.innerHTML=""
 
-      tree[y][m][d].push(c);
-    });
+data.forEach(item=>{
+const card=document.createElement("div")
+card.className="card"
+card.innerHTML=`
+<div class="nickname">${item.nickname}</div>
+<div>${item.date}</div>
+<div>${item.content}</div>
+`
+container.appendChild(card)
 
-    const sortedYears = Object.keys(tree).sort().reverse();
+const dateDiv=document.createElement("div")
+dateDiv.innerText=item.date
+dateDiv.style.cursor="pointer"
+dateDiv.onclick=()=>{
+render(data.filter(d=>d.date===item.date))
+}
+index.appendChild(dateDiv)
+})
+}
 
-    sortedYears.forEach(y=>{
-      const yearDiv=document.createElement("div");
-      yearDiv.className="year";
-      yearDiv.textContent=y;
-
-      const monthWrap=document.createElement("div");
-
-      yearDiv.onclick=()=>{
-        monthWrap.style.display=
-          monthWrap.style.display==="block"?"none":"block";
-      };
-
-      Object.keys(tree[y]).sort().reverse().forEach(m=>{
-        const monthDiv=document.createElement("div");
-        monthDiv.className="month";
-        monthDiv.textContent=m;
-
-        const dayWrap=document.createElement("div");
-
-        monthDiv.onclick=(e)=>{
-          e.stopPropagation();
-          dayWrap.style.display=
-            dayWrap.style.display==="block"?"none":"block";
-        };
-
-        Object.keys(tree[y][m]).sort().reverse().forEach(d=>{
-          const dayDiv=document.createElement("div");
-          dayDiv.className="day";
-          dayDiv.textContent=d;
-
-          dayDiv.onclick=(e)=>{
-            e.stopPropagation();
-            showPosts(y,m,d);
-          };
-
-          dayWrap.appendChild(dayDiv);
-        });
-
-        monthWrap.appendChild(monthDiv);
-        monthWrap.appendChild(dayWrap);
-      });
-
-      treeDiv.appendChild(yearDiv);
-      treeDiv.appendChild(monthWrap);
-    });
-
-    function showPosts(y,m,d){
-      postsDiv.innerHTML="";
-      tree[y][m][d].forEach(c=>{
-        postsDiv.innerHTML+=`
-          <div class="section">
-            <h3>${y}-${m}-${d}</h3>
-            <p>${c.content}</p >
-            <small>${c.nickname}</small>
-          </div>
-        `;
-      });
-    }
-
-    // 默认显示最新一天
-    const y=sortedYears[0];
-    const m=Object.keys(tree[y]).sort().reverse()[0];
-    const d=Object.keys(tree[y][m]).sort().reverse()[0];
-    showPosts(y,m,d);
-
-  });
+loadDiary()
 </script>
-<footer style="text-align:center;font-size:12px;color:#eee;margin:30px 0;">
-  © 2026 LUMU
-</footer>
+
 </body>
 </html>
