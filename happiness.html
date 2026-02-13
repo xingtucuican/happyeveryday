@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>🩵🩷 5幸福时刻 🩷🩵</title>
+<title>🩵🩷 幸福时刻 🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,14 +11,16 @@ html,body{height:100%;overflow:hidden;}
 
 body{
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-  background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 40%,#b7dbe3 60%,#f2b3c6 100%);
+  background:linear-gradient(135deg,#4ab7cc 0%,#79cbd8 50%,#f2b3c6 100%);
 }
 
-/* 🌸 粒子 */
+/* 粒子 */
 #particles{
   position:fixed;
-  width:100%;height:100%;
-  top:0;left:0;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
   pointer-events:none;
   z-index:0;
 }
@@ -35,7 +37,7 @@ body{
   to{transform:translateY(-10vh);}
 }
 
-/* 主体 */
+/* 主布局 */
 .wrapper{
   position:relative;
   z-index:1;
@@ -83,7 +85,6 @@ body{
   flex-direction:column;
 }
 
-/* 标题 */
 .title{
   text-align:center;
   font-size:22px;
@@ -92,7 +93,6 @@ body{
   margin-bottom:15px;
 }
 
-/* 留言框 */
 .comment-box{
   background:rgba(255,255,255,.9);
   border-radius:18px;
@@ -101,7 +101,6 @@ body{
   margin-bottom:20px;
 }
 
-/* 留言列表 */
 .comment-list{
   flex:1;
   background:rgba(255,255,255,.9);
@@ -111,7 +110,6 @@ body{
   box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
-/* 单条卡片 */
 .comment-card{
   background:#fff;
   border-radius:14px;
@@ -167,7 +165,7 @@ body{
     </div>
 
     <div class="comment-list" id="commentList">
-      正在加载留言...
+      等待留言加载...
     </div>
 
   </div>
@@ -176,7 +174,7 @@ body{
 <script async defer src="https://cusdis.com/js/cusdis.es.js"></script>
 
 <script>
-/* 🌸 粒子 */
+/* 粒子 */
 const particles=document.getElementById("particles");
 for(let i=0;i<50;i++){
   const p=document.createElement("div");
@@ -190,18 +188,19 @@ for(let i=0;i<50;i++){
   particles.appendChild(p);
 }
 
-const APP_ID="6bd954b7-e2b4-4206-a1c3-3072cecfc326";
 let allComments=[];
 let currentFilter=null;
 
-/* 加载留言 */
-async function loadComments(){
-  const res=await fetch(`https://cusdis.com/api/open/comments?appId=${APP_ID}&page=1`);
-  const data=await res.json();
-  allComments=data.data;
-  buildTree();
-  renderComments();
-}
+/* 监听 Cusdis 加载完成 */
+window.addEventListener("message",function(event){
+  if(event.data && event.data.from==="cusdis"){
+    if(event.data.type==="comments:load"){
+      allComments=event.data.data || [];
+      buildTree();
+      renderComments();
+    }
+  }
+});
 
 /* 构建日期树 */
 function buildTree(){
@@ -210,10 +209,11 @@ function buildTree(){
   const tree={};
 
   allComments.forEach(c=>{
-    const d=new Date(c.createdAt);
+    const d=new Date(c.created_at);
     const y=d.getFullYear();
     const m=String(d.getMonth()+1).padStart(2,'0');
     const day=String(d.getDate()).padStart(2,'0');
+
     if(!tree[y]) tree[y]={};
     if(!tree[y][m]) tree[y][m]={};
     if(!tree[y][m][day]) tree[y][m][day]=true;
@@ -223,6 +223,7 @@ function buildTree(){
     const year=document.createElement("div");
     year.className="tree-item";
     year.textContent=y+" ▼";
+
     const monthWrap=document.createElement("div");
     monthWrap.className="child";
 
@@ -233,6 +234,7 @@ function buildTree(){
       const month=document.createElement("div");
       month.className="tree-item";
       month.textContent=m+" ▼";
+
       const dayWrap=document.createElement("div");
       dayWrap.className="child";
 
@@ -246,11 +248,13 @@ function buildTree(){
         const day=document.createElement("div");
         day.className="tree-item";
         day.textContent=d;
+
         day.onclick=(e)=>{
           e.stopPropagation();
           currentFilter=`${y}-${m}-${d}`;
           renderComments();
         };
+
         dayWrap.appendChild(day);
       });
 
@@ -272,9 +276,8 @@ function renderComments(){
 
   if(currentFilter){
     filtered=allComments.filter(c=>{
-      const d=new Date(c.createdAt);
-      const dateStr=d.toISOString().split("T")[0];
-      return dateStr===currentFilter;
+      const d=new Date(c.created_at);
+      return d.toISOString().split("T")[0]===currentFilter;
     });
   }
 
@@ -284,7 +287,7 @@ function renderComments(){
   }
 
   filtered.forEach(c=>{
-    const d=new Date(c.createdAt);
+    const d=new Date(c.created_at);
     const card=document.createElement("div");
     card.className="comment-card";
     card.innerHTML=`
@@ -296,10 +299,13 @@ function renderComments(){
   });
 }
 
-/* 自动刷新 */
-setInterval(loadComments,30000);
+/* 30秒自动刷新 */
+setInterval(()=>{
+  if(window.CUSDIS){
+    window.CUSDIS.reload();
+  }
+},30000);
 
-loadComments();
 </script>
 
 </body>
