@@ -227,15 +227,13 @@ const title = document.getElementById("mainTitle");
 
 let particles=[];
 
-for(let i=0;i<90;i++){
+for(let i=0;i<100;i++){
   particles.push({
     x:Math.random()*canvas.width,
     y:Math.random()*canvas.height,
-    r:Math.random()*3+2,
-    baseR:Math.random()*3+2,
-    speedY:Math.random()*0.3+0.1,
-    driftX:(Math.random()-0.5)*0.3,
-    alpha:Math.random()*0.5+0.5,
+    baseR:Math.random()*1.5+1.2,   // 🌸 更小粒子
+    speedY:Math.random()*0.25+0.1,
+    driftX:(Math.random()-0.5)*0.2,
     phase:Math.random()*Math.PI*2,
     color:Math.random()>0.5?"blue":"pink"
   });
@@ -243,8 +241,8 @@ for(let i=0;i<90;i++){
 
 function draw(){
 
-  // 🌸 微拖尾效果
-  ctx.fillStyle="rgba(0,0,0,0.08)";
+  // 🌸 轻微拖尾（非常淡）
+  ctx.fillStyle="rgba(0,0,0,0.06)";
   ctx.globalCompositeOperation="destination-out";
   ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.globalCompositeOperation="lighter";
@@ -253,12 +251,12 @@ function draw(){
 
   particles.forEach(p=>{
 
-    // 🌸 呼吸闪烁
-    p.phase+=0.02;
-    let breath = Math.sin(p.phase)*0.3+0.7;
-    p.r = p.baseR * breath;
+    // 🌸 呼吸
+    p.phase+=0.03;
+    let breath = Math.sin(p.phase)*0.2+0.8;
+    let r = p.baseR * breath;
 
-    // 🌸 上升 + 横向轻漂
+    // 🌸 上升漂浮
     p.y -= p.speedY;
     p.x += p.driftX;
 
@@ -275,26 +273,26 @@ function draw(){
       p.y > rect.top-120 &&
       p.y < rect.bottom+120;
 
-    let radius = near ? p.r*1.6 : p.r;
+    let glowAlpha = near ? 0.9 : 0.6;
 
-    // 🌸 光晕渐变
+    // 🌸 外层光晕（蓝粉色，不是白）
     const gradient = ctx.createRadialGradient(
       p.x,p.y,0,
-      p.x,p.y,radius*3
+      p.x,p.y,r*4
     );
 
     if(p.color==="blue"){
-      gradient.addColorStop(0,"rgba(121,203,216,"+(near?0.9:0.7)+")");
-      gradient.addColorStop(0.3,"rgba(121,203,216,0.5)");
+      gradient.addColorStop(0,"rgba(121,203,216,"+glowAlpha+")");   // 中心蓝
+      gradient.addColorStop(0.4,"rgba(121,203,216,0.4)");
       gradient.addColorStop(1,"rgba(121,203,216,0)");
     }else{
-      gradient.addColorStop(0,"rgba(242,179,198,"+(near?0.9:0.7)+")");
-      gradient.addColorStop(0.3,"rgba(242,179,198,0.5)");
+      gradient.addColorStop(0,"rgba(242,179,198,"+glowAlpha+")");   // 中心粉
+      gradient.addColorStop(0.4,"rgba(242,179,198,0.4)");
       gradient.addColorStop(1,"rgba(242,179,198,0)");
     }
 
     ctx.beginPath();
-    ctx.arc(p.x,p.y,radius*3,0,Math.PI*2);
+    ctx.arc(p.x,p.y,r*4,0,Math.PI*2);
     ctx.fillStyle=gradient;
     ctx.fill();
 
