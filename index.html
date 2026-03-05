@@ -169,6 +169,15 @@ body{
 <a href="happiness.html">前往幸福 →</a >
 </div>
 
+<!-- 新增小游戏模块 -->
+<div class="block">
+<h3>🩵🩷星路无限 击中心动🩷🩵</h3>
+<p>点击按钮进入小游戏，享受游戏乐趣！</p >
+<button id="enter-game" style="padding:10px 20px; font-size:16px; background:#4da6ff; color:white; border:none; border-radius:5px; cursor:pointer;">
+  进入小游戏
+</button>
+</div>
+
 </div>
 
 <div class="right">
@@ -312,6 +321,11 @@ fetch('news.json')
     });
   })
   .catch(err=>console.error(err));
+
+// ================== 新增小游戏按钮点击事件 ==================
+document.getElementById('enter-game').addEventListener('click', () => {
+  window.open('game.html', '_blank'); // 新页面打开小游戏
+});
 </script>
 
 </body>
