@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>🩵🩷星路无限 - 心动射击🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
   margin:0;
@@ -16,8 +17,10 @@ body{
 /* 银河背景 */
 .galaxy{
   position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
   pointer-events:none;
   z-index:0;
 }
@@ -25,7 +28,8 @@ body{
 .galaxy::after{
   content:"";
   position:absolute;
-  width:200%; height:200%;
+  width:200%;
+  height:200%;
   background-image:
     radial-gradient(#ffffff55 2px, transparent 2px),
     radial-gradient(#f2b3c655 2px, transparent 2px),
@@ -66,21 +70,30 @@ body{
   z-index:1;
 }
 
-/* 粒子 */
+/* 粒子样式 */
 .particle{
   position:absolute;
+  display:block;
   font-size:48px;
+  padding:10px;
+  text-shadow:0 0 6px rgba(255,255,255,0.5),
+              0 0 12px rgba(255,255,255,0.3),
+              0 0 20px rgba(255,255,255,0.2);
   cursor:pointer;
   user-select:none;
 }
 .star{
   color:#f2b3c6;
-  text-shadow:0 0 8px #4ab7cc,0 0 16px #4ab7cc,0 0 24px #4ab7cc;
+  text-shadow:0 0 8px #4ab7cc,
+              0 0 16px #4ab7cc,
+              0 0 24px #4ab7cc;
   filter:drop-shadow(0 0 10px #4ab7cc);
 }
 .heart{
   color:#4ab7cc;
-  text-shadow:0 0 8px #f2b3c6,0 0 16px #f2b3c6,0 0 24px #f2b3c6;
+  text-shadow:0 0 8px #f2b3c6,
+              0 0 16px #f2b3c6,
+              0 0 24px #f2b3c6;
   filter:drop-shadow(0 0 10px #f2b3c6);
 }
 
@@ -98,21 +111,21 @@ body{
 /* 分数飘字 */
 .scorePop{
   position:absolute;
+  font-size:24px;
   font-weight:bold;
   color:white;
   animation:scoreUp 0.9s forwards;
-  transform-origin:center center;
 }
 @keyframes scoreUp{
-  0%{transform:translate(-50%,-50%) scale(1); opacity:1;}
-  50%{transform:translate(-50%,-80%) scale(2); opacity:1;}
-  100%{transform:translate(-50%,-120%) scale(3); opacity:0;}
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(-50px);opacity:0;}
 }
 
 /* 涟漪 */
 .ripple{
   position:absolute;
-  width:50px; height:50px;
+  width:50px;
+  height:50px;
   border:3px solid;
   border-radius:50%;
   animation:wave 0.6s forwards;
@@ -125,7 +138,8 @@ body{
 /* 游戏开始 */
 .start{
   position:fixed;
-  width:100%; height:100%;
+  width:100%;
+  height:100%;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -134,17 +148,22 @@ body{
   z-index:2;
 }
 .title1{
-  font-size:48px; margin-bottom:20px;
+  font-size:48px;
+  margin-bottom:20px;
   background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
-  -webkit-background-clip:text; color:transparent;
+  -webkit-background-clip:text;
+  color:transparent;
 }
 .title2{
-  font-size:36px; margin-bottom:40px;
+  font-size:36px;
+  margin-bottom:40px;
   background:linear-gradient(45deg,#4ab7cc,#f2b3c6);
-  -webkit-background-clip:text; color:transparent;
+  -webkit-background-clip:text;
+  color:transparent;
 }
 .startBtn{
-  font-size:24px; padding:12px 36px;
+  font-size:24px;
+  padding:12px 36px;
   border-radius:20px;
   background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
   color:white;
@@ -155,22 +174,36 @@ body{
 /* 胜利页面 */
 .win{
   position:fixed;
-  top:0; left:0; width:100%; height:100%;
-  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
   background:rgba(0,0,0,0.6);
-  color:white; font-size:24px; z-index:3;
+  color:white;
+  font-size:24px;
+  z-index:3;
 }
 .winTitle{
-  font-size:48px; margin-bottom:20px;
+  font-size:48px;
+  margin-bottom:20px;
   background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
-  -webkit-background-clip:text; color:transparent;
+  -webkit-background-clip:text;
+  color:transparent;
 }
-.winText{margin-bottom:10px;}
+.winText{
+  margin-bottom:10px;
+}
 
-/* 自定义鼠标 */
+/* 自定义鼠标 😼 */
 #catCursor{
-  position:fixed; font-size:64px;
-  pointer-events:none; z-index:9999;
+  position:fixed;
+  font-size:64px;
+  pointer-events:none;
+  z-index:9999;
   transform:translate(-50%,-50%);
 }
 </style>
@@ -201,22 +234,29 @@ body{
 </div>
 
 <script>
-const startBtn=document.getElementById('startBtn');
-const startScreen=document.getElementById('startScreen');
-const gameContainer=document.getElementById('gameContainer');
-const winScreen=document.getElementById('winScreen');
-const scoreEl=document.getElementById('score');
-const timeEl=document.getElementById('time');
-const finalScore=document.getElementById('finalScore');
-const finalLevel=document.getElementById('finalLevel');
-const gameArea=document.getElementById('gameArea');
-const catCursor=document.getElementById('catCursor');
+const startBtn = document.getElementById('startBtn');
+const startScreen = document.getElementById('startScreen');
+const gameContainer = document.getElementById('gameContainer');
+const winScreen = document.getElementById('winScreen');
+const scoreEl = document.getElementById('score');
+const timeEl = document.getElementById('time');
+const finalScore = document.getElementById('finalScore');
+const finalLevel = document.getElementById('finalLevel');
+const gameArea = document.getElementById('gameArea');
+const catCursor = document.getElementById('catCursor');
 
-let particles=[], score=0, timeLeft=60, lastType=null, gameTimer=null, finalMode=false, started=false;
+let particles=[], score=0, timeLeft=60, lastType=null, gameTimer, moveTimer, finalMode=false;
 
 // 光标跟随
-document.addEventListener('mousemove',e=>{catCursor.style.left=e.clientX+'px'; catCursor.style.top=e.clientY+'px';});
-document.addEventListener('touchmove',e=>{const t=e.touches[0]; catCursor.style.left=t.clientX+'px'; catCursor.style.top=t.clientY+'px';});
+document.addEventListener('mousemove', e => {
+  catCursor.style.left = e.clientX + 'px';
+  catCursor.style.top = e.clientY + 'px';
+});
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  catCursor.style.left = t.clientX + 'px';
+  catCursor.style.top = t.clientY + 'px';
+});
 
 // 屏幕尺寸
 function getScreenSize(){return {width:window.innerWidth,height:window.innerHeight};}
@@ -225,65 +265,64 @@ function getScreenSize(){return {width:window.innerWidth,height:window.innerHeig
 function createParticles(){
   const {width,height}=getScreenSize();
   particles=[];
+  gameArea.innerHTML='';
   for(let i=0;i<60;i++){
     let type=Math.random()>0.5?"star":"heart";
-    particles.push({
-      id:i, type:type, icon:type=="star"?"✦":"♡",
+    const p = {
+      id:i,
+      type:type,
+      icon:type=="star"?"✦":"♡",
       x:Math.random()*width,
-      y:height+Math.random()*300, // 从下方开始
-      size:48,
-      dx:(Math.random()-0.5)*3, // 横向随机漂
-      dy:-(1+Math.random()*2) // 上升速度
-    });
-  }
-  renderParticles();
-}
+      y:height + Math.random()*height,
+      r:Math.random()*360,
+      size:48
+    };
+    particles.push(p);
 
-// 渲染粒子
-function renderParticles(){
-  gameArea.innerHTML='';
-  particles.forEach(p=>{
     const el=document.createElement('div');
     el.className=`particle ${p.type}`;
     el.style.left=p.x+'px';
     el.style.top=p.y+'px';
+    el.style.transform=`rotate(${p.r}deg)`;
     el.textContent=p.icon;
     gameArea.appendChild(el);
+    p.el = el; 
+  }
+}
+
+// 渲染粒子（只更新位置）
+function renderParticles(){
+  particles.forEach(p=>{
+    p.el.style.left = p.x+'px';
+    p.el.style.top = p.y+'px';
   });
 }
 
-// 粒子移动
+// 移动粒子
 function moveParticles(){
   const {width,height}=getScreenSize();
-  function animate(){
+  moveTimer=setInterval(()=>{
     particles.forEach(p=>{
-      p.x+=p.dx;
-      p.y+=p.dy;
-      if(p.x<0)p.x=width; if(p.x>width)p.x=0;
-      if(p.y<-50)p.y=height+Math.random()*50;
+      p.y -= 2 + Math.random()*3;
+      p.x += Math.random()*4-2;
+      if(p.y < -50) p.y = height + Math.random()*50;
+      if(p.x < 0) p.x = width;
+      if(p.x > width) p.x = 0;
     });
     renderParticles();
-    requestAnimationFrame(animate);
-  }
-  requestAnimationFrame(animate);
+  },80);
 }
 
 // 点击检测
 function handleClick(x,y){
-  let hit=false;
   particles.forEach(p=>{
-    const dx=x-(p.x+p.size/2);
-    const dy=y-(p.y+p.size/2);
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<50){
-      hit=true;
+    const dx = x - (p.x + p.size/2);
+    const dy = y - (p.y + p.size/2);
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 40){
       hitParticle(p);
     }
   });
-  if(hit && !started){
-    started=true;
-    startScoreTimer();
-  }
 }
 
 // 点击粒子
@@ -296,14 +335,16 @@ function hitParticle(p){
     showScore(p.x,p.y);
     checkSpecial(score);
   }
-  showRipple(p); showEffect(p);
+  showRipple(p);
+  showEffect(p);
 }
 
 // 分数飘字
 function showScore(x,y){
   const s=document.createElement('div');
   s.className='scorePop';
-  s.style.left=x+'px'; s.style.top=y+'px';
+  s.style.left=x+'px';
+  s.style.top=y+'px';
   s.textContent='+1';
   gameArea.appendChild(s);
   setTimeout(()=>s.remove(),900);
@@ -313,7 +354,8 @@ function showScore(x,y){
 function showRipple(p){
   const r=document.createElement('div');
   r.className='ripple';
-  r.style.left=p.x+'px'; r.style.top=p.y+'px';
+  r.style.left=p.x+'px';
+  r.style.top=p.y+'px';
   r.style.borderColor=p.type=="star"?"#f2b3c6":"#4ab7cc";
   gameArea.appendChild(r);
   setTimeout(()=>r.remove(),600);
@@ -323,55 +365,52 @@ function showRipple(p){
 function showEffect(p){
   const e=document.createElement('div');
   e.className='effect';
-  e.style.left=p.x+'px'; e.style.top=p.y+'px';
+  e.style.left=p.x+'px';
+  e.style.top=p.y+'px';
   e.style.color=p.type=="star"?"#4ab7cc":"#f2b3c6";
   e.textContent='✦';
   gameArea.appendChild(e);
   setTimeout(()=>e.remove(),500);
 }
 
-// 特殊彩蛋
+// 彩蛋
 function checkSpecial(score){
-  if(score==11){showMsg("11🩵🩷紧张吗"); alert("11🩵🩷紧张吗"); addScore(11);}
-  if(score==27){showMsg("27🩵🩷有点"); alert("27🩵🩷有点"); addScore(27);}
-  if(score==108){showMsg("108💗心动+11"); alert("108💗心动+11"); addScore(11);}
-  if(score==913){showMsg("913🥀我们都唯有一颗真心而已"); alert("913🥀我们都唯有一颗真心而已");}
-  if(score==1116){showMsg("1116⭐星途璀璨 +27"); alert("1116⭐星途璀璨 +27"); addScore(27);}
-  if(score==2711){showMsg("2711🩵🩷橹穆 +99"); alert("2711🩵🩷橹穆 +99"); addScore(99); endGame();}
+  if(score==11){showMsg("11🩵🩷紧张吗"); addScore(11);}
+  if(score==27){showMsg("27🩵🩷有点"); addScore(27);}
+  if(score==108){showMsg("108💗心动+11"); addScore(11);}
+  if(score==1116){showMsg("1116⭐星途璀璨 +27"); addScore(27);}
+  if(score==2711){showMsg("2711🩵🩷橹穆 +99"); addScore(99); endGame();}
+  if(score>=271199 && !finalMode){finalMode=true; showMsg("永恒之爱"); galaxyExplosion();}
 }
 
-// 弹出文字
+// 消息
 function showMsg(t){
   const msg=document.createElement('div');
   msg.className='scorePop';
-  msg.style.left='50%'; msg.style.top='40%';
-  msg.style.transform='translate(-50%,-50%) scale(4)';
-  msg.style.fontSize='48px';
+  msg.style.left='50%';
+  msg.style.top='40%';
+  msg.style.transform='translate(-50%,-50%)';
   msg.textContent=t;
   gameArea.appendChild(msg);
-  setTimeout(()=>msg.remove(),2000);
+  setTimeout(()=>msg.remove(),1500);
 }
 
 // 分数加成
 function addScore(v){score+=v; scoreEl.textContent=score;}
 
-// 计分计时
-function startScoreTimer(){
-  timeLeft=60; timeEl.textContent=60;
-  score=0; scoreEl.textContent=0;
-  gameTimer=setInterval(()=>{
-    timeLeft--; timeEl.textContent=timeLeft;
-    if(timeLeft<=0) endGame();
-  },1000);
-}
-
-// 游戏结束
-function endGame(){
-  clearInterval(gameTimer);
-  gameContainer.style.display='none';
-  winScreen.style.display='flex';
-  finalScore.textContent='最终得分: '+score;
-  finalLevel.textContent='最终等级: '+getLevel(score);
+// 银河爆炸
+function galaxyExplosion(){
+  const {width,height}=getScreenSize();
+  for(let i=0;i<60;i++){
+    const e=document.createElement('div');
+    e.className='effect';
+    e.style.left=Math.random()*width+'px';
+    e.style.top=Math.random()*height+'px';
+    e.style.color='#fff';
+    e.textContent='✦';
+    gameArea.appendChild(e);
+    setTimeout(()=>e.remove(),1000);
+  }
 }
 
 // 等级
@@ -381,24 +420,52 @@ function getLevel(score){
   if(score<=108)return "牵手";
   if(score<=1116)return "共振";
   if(score<=2711)return "星途璀璨";
-  return "永恒之爱";
+  if(score>=271199)return "永恒之爱";
+  return "星途璀璨";
 }
 
-// 游戏开始按钮
+// 游戏开始
 startBtn.addEventListener('click',()=>{
   startScreen.style.display='none';
   gameContainer.style.display='block';
-  started=false;
+  score=0; scoreEl.textContent=0;
+  timeLeft=60; timeEl.textContent=60;
   lastType=null;
   finalMode=false;
   createParticles();
   moveParticles();
+  gameTimer=setInterval(()=>{
+    timeLeft--;
+    timeEl.textContent=timeLeft;
+    if(timeLeft<=0) endGame();
+  },1000);
 });
 
-// 点击/触控事件
-document.addEventListener('click', e=>handleClick(e.clientX,e.clientY));
-document.addEventListener('touchstart', e=>{const t=e.touches[0]; handleClick(t.clientX,t.clientY);});
+// 监听点击/触控
+document.addEventListener('click', e => handleClick(e.clientX, e.clientY));
+document.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  handleClick(t.clientX, t.clientY);
+});
 
+// 游戏结束
+function endGame(){
+  clearInterval(gameTimer);
+  clearInterval(moveTimer);
+  gameContainer.style.display='none';
+  winScreen.style.display='flex';
+  finalScore.textContent='最终得分: '+score;
+  finalLevel.textContent='最终等级: '+getLevel(score);
+}
+
+// 屏幕尺寸变化
+window.addEventListener('resize',()=>{
+  const {width,height}=getScreenSize();
+  particles.forEach(p=>{
+    if(p.x>width)p.x=width;
+    if(p.y>height)p.y=height;
+  });
+});
 </script>
 </body>
 </html>
