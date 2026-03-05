@@ -298,13 +298,14 @@ function renderParticles(){
   });
 }
 
-// 移动粒子
+// 移动粒子（乱飘上升）
 function moveParticles(){
   const {width,height}=getScreenSize();
   moveTimer=setInterval(()=>{
     particles.forEach(p=>{
-      p.y -= 2 + Math.random()*3;
-      p.x += Math.random()*4-2;
+      p.y -= 2 + Math.random()*3;    // 上升
+      p.x += Math.random()*4 - 2;    // 横向随机漂
+      // 超出屏幕从底部重生
       if(p.y < -50) p.y = height + Math.random()*50;
       if(p.x < 0) p.x = width;
       if(p.x > width) p.x = 0;
@@ -383,18 +384,20 @@ function checkSpecial(score){
   if(score>=271199 && !finalMode){finalMode=true; showMsg("永恒之爱"); galaxyExplosion();}
 }
 
-// 消息
+// 消息（彩蛋）弹出：字体最大化
 function showMsg(t){
-  const msg=document.createElement('div');
-  msg.className='scorePop';
-  msg.style.left='50%';
-  msg.style.top='40%';
-  msg.style.transform='translate(-50%,-50%)';
-  msg.textContent=t;
+  const msg = document.createElement('div');
+  msg.className = 'scorePop';
+  msg.style.left = '50%';
+  msg.style.top = '50%';
+  msg.style.transform = 'translate(-50%,-50%) scale(10)'; // 放大到满屏
+  msg.style.fontSize = '128px'; // 最大化
+  msg.style.textAlign = 'center';
+  msg.style.pointerEvents = 'none';
+  msg.textContent = t;
   gameArea.appendChild(msg);
-  setTimeout(()=>msg.remove(),1500);
+  setTimeout(()=>msg.remove(),2000);
 }
-
 // 分数加成
 function addScore(v){score+=v; scoreEl.textContent=score;}
 
