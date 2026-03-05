@@ -1,1 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>🩵🩷星路无限 - 心动射击🩷🩵</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<style>
+body{
+  margin:0;
+  font-family:"Smiley Sans",sans-serif;
+  background:linear-gradient(135deg,#f2b3c6,#4ab7cc);
+  overflow:hidden;
+  cursor:pointer;
+}
+
+/* 银河背景 */
+.galaxy{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+}
+.galaxy::before,
+.galaxy::after{
+  content:"";
+  position:absolute;
+  width:200%;
+  height:200%;
+  background-image:
+    radial-gradient(#ffffff55 2px, transparent 2px),
+    radial-gradient(#f2b3c655 2px, transparent 2px),
+    radial-gradient(#4ab7cc55 2px, transparent 2px);
+  background-size:120px 120px;
+  animation:galaxyMove 40s linear infinite;
+}
+.galaxy::after{
+  animation-duration:70s;
+  opacity:0.6;
+}
+@keyframes galaxyMove{
+  from{transform:translateY(0);}
+  to{transform:translateY(-800px);}
+}
+
+/* 顶部UI */
+.top{
+  display:flex;
+  justify-content:space-between;
+  padding:20px;
+  color:white;
+  font-size:24px;
+  position:relative;
+  z-index:1;
+}
+
+/* 游戏区 */
+.container{
+  width:100%;
+  height:100vh;
+  position:relative;
+}
+.game{
+  position:relative;
+  width:100%;
+  height:calc(100% - 60px);
+  z-index:1;
+}
+
+/* 粒子样式 */
+.particle{
+  position:absolute;
+  display:block;
+  font-size:28px;
+  transition:transform 0.1s linear;
+  text-shadow:0 0 6px rgba(255,255,255,0.5),0 0 12px rgba(255,255,255,0.3),0 0 20px rgba(255,255,255,0.2);
+  cursor:pointer;
+}
+.star{
+  color:#f2b3c6;
+  text-shadow:0 0 8px #4ab7cc,0 0 16px #4ab7cc,0 0 24px #4ab7cc;
+  filter:drop-shadow(0 0 10px #4ab7cc);
+}
+.heart{
+  color:#4ab7cc;
+  text-shadow:0 0 8px #f2b3c6,0 0 16px #f2b3c6,0 0 24px #f2b3c6;
+  filter:drop-shadow(0 0 10px #f2b3c6);
+}
+
+/* 特效 */
+.effect{
+  position:absolute;
+  font-size:20px;
+  animation:boom 0.5s forwards;
+}
+@keyframes boom{
+  0%{transform:scale(0.5);opacity:1;}
+  100%{transform:scale(2);opacity:0;}
+}
+
+/* 分数飘字 */
+.scorePop{
+  position:absolute;
+  font-size:20px;
+  font-weight:bold;
+  color:white;
+  animation:scoreUp 0.9s forwards;
+}
+@keyframes scoreUp{
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(-50px);opacity:0;}
+}
+
+/* 涟漪 */
+.ripple{
+  position:absolute;
+  width:40px;
+  height:40px;
+  border:3px solid;
+  border-radius:50%;
+  animation:wave 0.6s forwards;
+}
+@keyframes wave{
+  0%{transform:scale(0.3);opacity:1;}
+  100%{transform:scale(2.2);opacity:0;}
+}
+
+/* 游戏开始 */
+.start{
+  position:fixed;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  color:white;
+  z-index:2;
+}
+.title1{
+  font-size:48px;
+  margin-bottom:20px;
+  background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.title2{
+  font-size:36px;
+  margin-bottom:40px;
+  background:linear-gradient(45deg,#4ab7cc,#f2b3c6);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.startBtn{
+  font-size:24px;
+  padding:12px 36px;
+  border-radius:20px;
+  background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
+  color:white;
+  cursor:pointer;
+  box-shadow:0 0 10px rgba(255,255,255,0.4);
+}
+
+/* 胜利页面 */
+.win{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:rgba(0,0,0,0.6);
+  color:white;
+  font-size:24px;
+  z-index:3;
+}
+.winTitle{
+  font-size:48px;
+  margin-bottom:20px;
+  background:linear-gradient(45deg,#f2b3c6,#4ab7cc);
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.winText{
+  margin-bottom:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="galaxy"></div>
+
+<!-- 开始界面 -->
+<div class="start" id="startScreen">
+  <div class="title1">星路无限</div>
+  <div class="title2">心动射击</div>
+  <div class="startBtn" id="startBtn">点击开始</div>
+</div>
+
+<!-- 游戏容器 -->
+<div class="container" id="gameContainer" style="display:none;">
+  <div class="top">
+    <span>得分: <span id="score">0</span></span>
+    <span>时间: <span id="time">60</span></span>
+  </div>
+  <div class="game" id="gameArea"></div>
+</div>
+
+<!-- 胜利界面 -->
+<div class="win" id="winScreen" style="display:none;">
+  <div class="winTitle">⭐星途璀璨⭐</div>
+  <div class="winText" id="finalScore">最终得分: 0</div>
+  <div class="winText" id="finalLevel">最终等级: 初见</div>
+</div>
+
+<script>
+const startBtn = document.getElementById('startBtn');
+const startScreen = document.getElementById('startScreen');
+const gameContainer = document.getElementById('gameContainer');
+const winScreen = document.getElementById('winScreen');
+const scoreEl = document.getElementById('score');
+const timeEl = document.getElementById('time');
+const finalScore = document.getElementById('finalScore');
+const finalLevel = document.getElementById('finalLevel');
+const gameArea = document.getElementById('gameArea');
+
+let particles=[], score=0, timeLeft=60, lastType=null, gameTimer, moveTimer, gameOver=false, finalMode=false;
+
+// 创建粒子
+function createParticles(){
+  particles=[];
+  for(let i=0;i<60;i++){
+    let type=Math.random()>0.5?"star":"heart";
+    particles.push({id:i,type:type,icon:type=="star"?"✦":"♡",x:Math.random()*350,y:Math.random()*700,r:Math.random()*360});
+  }
+  renderParticles();
+}
+
+// 渲染粒子
+function renderParticles(){
+  gameArea.innerHTML='';
+  particles.forEach(p=>{
+    const el=document.createElement('div');
+    el.className=`particle ${p.type}`;
+    el.style.left=p.x+'px';
+    el.style.top=p.y+'px';
+    el.style.transform=`rotate(${p.r}deg)`;
+    el.textContent=p.icon;
+    el.dataset.id=p.id;
+    el.addEventListener('click',hitParticle);
+    gameArea.appendChild(el);
+  });
+}
+
+// 粒子移动
+function moveParticles(){
+  moveTimer=setInterval(()=>{
+    particles.forEach(p=>{
+      p.y-=3;
+      p.x+=Math.random()*4-2;
+      if(p.y<-20){p.y=700;p.x=Math.random()*350;}
+    });
+    renderParticles();
+  },80);
+}
+
+// 点击粒子
+function hitParticle(e){
+  const id=e.currentTarget.dataset.id;
+  const p=particles[id];
+  if(!p)return;
+
+  if(lastType===null){lastType=p.type; return;}
+  if(lastType!==p.type){
+    score++;
+    scoreEl.textContent=score;
+    lastType=p.type;
+    showScore(p.x,p.y);
+    checkSpecial(score);
+  }
+  showRipple(p);
+  showEffect(p);
+}
+
+// 分数飘字
+function showScore(x,y){
+  const s=document.createElement('div');
+  s.className='scorePop';
+  s.style.left=x+'px';
+  s.style.top=y+'px';
+  s.textContent='+1';
+  gameArea.appendChild(s);
+  setTimeout(()=>s.remove(),900);
+}
+
+// 涟漪
+function showRipple(p){
+  const r=document.createElement('div');
+  r.className='ripple';
+  r.style.left=p.x+'px';
+  r.style.top=p.y+'px';
+  r.style.borderColor=p.type=="star"?"#f2b3c6":"#4ab7cc";
+  gameArea.appendChild(r);
+  setTimeout(()=>r.remove(),600);
+}
+
+// 特效
+function showEffect(p){
+  const e=document.createElement('div');
+  e.className='effect';
+  e.style.left=p.x+'px';
+  e.style.top=p.y+'px';
+  e.style.color=p.type=="star"?"#4ab7cc":"#f2b3c6";
+  e.textContent='✦';
+  gameArea.appendChild(e);
+  setTimeout(()=>e.remove(),500);
+}
+
+// 检查彩蛋
+function checkSpecial(score){
+  if(score==11) showMsg("🩵🩷紧张吗"), addScore(11);
+  if(score==27) showMsg("🩵🩷有点"), addScore(27);
+  if(score==108) showMsg("💗心动+11"), addScore(11);
+  if(score==913) showMsg("🥀我们都唯有一颗真心而已");
+  if(score==1116) showMsg("⭐星途璀璨 +27"), addScore(27);
+  if(score==2711){ showMsg("🩵🩷橹穆 +99"); addScore(99); endGame();}
+  if(score>=271199 && !finalMode){finalMode=true; showMsg("永恒之爱"); galaxyExplosion();}
+}
+
+// 显示消息
+function showMsg(t){
+  const msg=document.createElement('div');
+  msg.className='scorePop';
+  msg.style.left='50%';
+  msg.style.top='40%';
+  msg.style.transform='translate(-50%,-50%)';
+  msg.textContent=t;
+  gameArea.appendChild(msg);
+  setTimeout(()=>msg.remove(),1500);
+}
+
+// 增加分数
+function addScore(v){score+=v; scoreEl.textContent=score;}
+
+// 银河爆炸
+function galaxyExplosion(){
+  for(let i=0;i<60;i++){
+    const e=document.createElement('div');
+    e.className='effect';
+    e.style.left=Math.random()*350+'px';
+    e.style.top=Math.random()*700+'px';
+    e.style.color='#fff';
+    e.textContent='✦';
+    gameArea.appendChild(e);
+    setTimeout(()=>e.remove(),1000);
+  }
+}
+
+// 获取等级
+function getLevel(score){
+  if(score<=11)return "初见";
+  if(score<=27)return "心动";
+  if(score<=108)return "牵手";
+  if(score<=1116)return "共振";
+  if(score<=2711)return "星途璀璨";
+  if(score>=271199)return "永恒之爱";
+  return "星途璀璨";
+}
+
+// 开始游戏
+startBtn.addEventListener('click',()=>{
+  startScreen.style.display='none';
+  gameContainer.style.display='block';
+  score=0; scoreEl.textContent=0;
+  timeLeft=60; timeEl.textContent=60;
+  lastType=null;
+  gameOver=false; finalMode=false;
+  createParticles(); moveParticles();
+  gameTimer=setInterval(()=>{
+    timeLeft--;
+    timeEl.textContent=timeLeft;
+    if(timeLeft<=0) endGame();
+  },1000);
+});
+
+// 游戏结束
+function endGame(){
+  clearInterval(gameTimer);
+  clearInterval(moveTimer);
+  gameOver=true;
+  gameContainer.style.display='none';
+  winScreen.style.display='flex';
+  finalScore.textContent='最终得分: '+score;
+  finalLevel.textContent='最终等级: '+getLevel(score);
+}
+</script>
+</body>
+</html>
