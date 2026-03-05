@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>🩵🩷星路无限 - 心动射击🩷🩵</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body{
   margin:0;
@@ -74,9 +73,11 @@ body{
 .particle{
   position:absolute;
   display:block;
-  font-size:40px; /* 扩大点击区域 */
+  font-size:28px;
   transition:transform 0.1s linear;
-  text-shadow:0 0 6px rgba(255,255,255,0.5),0 0 12px rgba(255,255,255,0.3),0 0 20px rgba(255,255,255,0.2);
+  text-shadow:0 0 6px rgba(255,255,255,0.5),
+              0 0 12px rgba(255,255,255,0.3),
+              0 0 20px rgba(255,255,255,0.2);
   cursor:pointer;
 }
 .star{
@@ -87,7 +88,7 @@ body{
 .heart{
   color:#4ab7cc;
   text-shadow:0 0 8px #f2b3c6,0 0 16px #f2b3c6,0 0 24px #f2b3c6;
-  filter:drop-shadow(0 0 10px #4ab7cc);
+  filter:drop-shadow(0 0 10px #f2b3c6);
 }
 
 /* 特效 */
@@ -230,7 +231,7 @@ const finalScore = document.getElementById('finalScore');
 const finalLevel = document.getElementById('finalLevel');
 const gameArea = document.getElementById('gameArea');
 
-let particles=[], score=0, timeLeft=60, lastType=null, gameTimer, moveTimer, gameOver=false, finalMode=false;
+let particles=[], score=0, timeLeft=60, lastType=null, gameTimer, moveTimer, finalMode=false;
 
 // 获取屏幕宽高
 function getScreenSize(){
@@ -243,35 +244,37 @@ function createParticles(){
   particles=[];
   for(let i=0;i<60;i++){
     let type=Math.random()>0.5?"star":"heart";
-    let p={
+    particles.push({
       id:i,
       type:type,
       icon:type=="star"?"✦":"♡",
       x:Math.random()*width,
       y:Math.random()*height,
       r:Math.random()*360
-    };
-    particles.push(p);
+    });
   }
   renderParticles();
 }
 
-// 渲染粒子
+// 渲染粒子（只创建，不重复绑定事件）
 function renderParticles(){
   gameArea.innerHTML='';
   particles.forEach(p=>{
-    const el=document.createElement('div');
-    el.className=`particle ${p.type}`;
-    el.style.left=p.x+'px';
-    el.style.top=p.y+'px';
-    el.style.transform=`rotate(${p.r}deg)`;
-    el.textContent=p.icon;
-
-    // 绑定粒子对象本身，不用数组索引
-    el.particleObj = p;
-
-    el.addEventListener('click', e => hitParticle(e.currentTarget.particleObj));
-    gameArea.appendChild(el);
+    if(!p.el){
+      const el=document.createElement('div');
+      el.className=`particle ${p.type}`;
+      el.style.left=p.x+'px';
+      el.style.top=p.y+'px';
+      el.style.transform=`rotate(${p.r}deg)`;
+      el.textContent=p.icon;
+      el.dataset.id=p.id;
+      el.addEventListener('click',()=>hitParticle(p));
+      p.el=el;
+      gameArea.appendChild(el);
+    }else{
+      p.el.style.left=p.x+'px';
+      p.el.style.top=p.y+'px';
+    }
   });
 }
 
@@ -292,9 +295,7 @@ function moveParticles(){
 
 // 点击粒子
 function hitParticle(p){
-  if(!p || gameOver) return;
-
-  if(lastType===null){ lastType=p.type; return; }
+  if(lastType===null){lastType=p.type; return;}
   if(lastType!==p.type){
     score++;
     scoreEl.textContent=score;
@@ -340,15 +341,15 @@ function showEffect(p){
   setTimeout(()=>e.remove(),500);
 }
 
-// 检查彩蛋
+// 彩蛋检查
 function checkSpecial(score){
-  if(score==11){ showMsg("🩵🩷紧张吗"); alert("🩵🩷紧张吗"); addScore(11); }
-  if(score==27){ showMsg("🩵🩷有点"); alert("🩵🩷有点"); addScore(27); }
-  if(score==108){ showMsg("💗心动+11"); alert("💗心动+11"); addScore(11); }
-  if(score==913){ showMsg("🥀我们都唯有一颗真心而已"); alert("🥀我们都唯有一颗真心而已"); }
-  if(score==1116){ showMsg("⭐星途璀璨 +27"); alert("⭐星途璀璨 +27"); addScore(27); }
-  if(score==2711){ showMsg("🩵🩷橹穆 +99"); alert("🩵🩷橹穆 +99"); addScore(99); endGame(); }
-  if(score>=271199 && !finalMode){ finalMode=true; showMsg("永恒之爱"); alert("永恒之爱"); galaxyExplosion(); }
+  if(score==11){showMsg("🩵🩷紧张吗"); alert("🩵🩷紧张吗"); addScore(11);}
+  if(score==27){showMsg("🩵🩷有点"); alert("🩵🩷有点"); addScore(27);}
+  if(score==108){showMsg("💗心动+11"); alert("💗心动+11"); addScore(11);}
+  if(score==913){showMsg("🥀我们都唯有一颗真心而已"); alert("🥀我们都唯有一颗真心而已");}
+  if(score==1116){showMsg("⭐星途璀璨 +27"); alert("⭐星途璀璨 +27"); addScore(27);}
+  if(score==2711){showMsg("🩵🩷橹穆 +99"); alert("🩵🩷橹穆 +99"); addScore(99); endGame();}
+  if(score>=271199 && !finalMode){finalMode=true; showMsg("永恒之爱"); alert("永恒之爱"); galaxyExplosion();}
 }
 
 // 显示消息
@@ -364,7 +365,7 @@ function showMsg(t){
 }
 
 // 增加分数
-function addScore(v){ score+=v; scoreEl.textContent=score; }
+function addScore(v){score+=v; scoreEl.textContent=score;}
 
 // 银河爆炸
 function galaxyExplosion(){
@@ -399,8 +400,9 @@ startBtn.addEventListener('click',()=>{
   score=0; scoreEl.textContent=0;
   timeLeft=60; timeEl.textContent=60;
   lastType=null;
-  gameOver=false; finalMode=false;
-  createParticles(); moveParticles();
+  finalMode=false;
+  createParticles();
+  moveParticles();
   gameTimer=setInterval(()=>{
     timeLeft--;
     timeEl.textContent=timeLeft;
@@ -412,7 +414,6 @@ startBtn.addEventListener('click',()=>{
 function endGame(){
   clearInterval(gameTimer);
   clearInterval(moveTimer);
-  gameOver=true;
   gameContainer.style.display='none';
   winScreen.style.display='flex';
   finalScore.textContent='最终得分: '+score;
